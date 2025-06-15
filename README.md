@@ -1,55 +1,94 @@
-# 🚬 CigTracker — Progressive Web App (Vue 3 + TailwindCSS)
+# CigTracker
 
-This is a mobile-first Progressive Web App (PWA) built with **Vue 3**, **Vue Router**, **TailwindCSS**, and **vite-plugin-pwa**, designed to help you track cigarette consumption and reduce your intake over time.
+A minimalist and responsive **Progressive Web App (PWA)** to help you track your cigarette consumption — inspired by Apple’s flat design principles.
 
-## 📱 Features
-
-### 🔢 Home
-- Track how many cigarettes you've smoked today
-- Live timer since your last cigarette
-- One-tap "➕" button to add a cigarette
-
-### 📅 History
-- Daily logs with:
-  - Date, weekday
-  - Nicotine amount (e.g., 9.6 mg)
-  - Difference vs. previous day
-- Stored in `localStorage`
-
-### 📊 Stats
-- Line chart of your cigarette use (Chart.js)
-- Weekly averages:
-  - Last week, previous week, first week
-- Total cigarettes, packs, money spent
-- Estimated total toxins (nicotine, tar, CO)
-- Minimum/maximum consumption days
-
-### ⚙️ Settings
-- Customize nicotine amount per cigarette
-- Stored in `localStorage`
-
-### 🧾 Edit History
-- Visualize and **edit** historical data:
-  - Add/remove cigarettes for any day
-  - Modify time of each cigarette
-  - Swipe left to delete
+Built with **Vue 3**, **Tailwind CSS**, and **Chart.js**.
 
 ---
 
-## 💻 Technologies Used
+## 📱 Screenshots
 
-- [Vue 3](https://vuejs.org/)
-- [TailwindCSS](https://tailwindcss.com/)
-- [Vue Router](https://router.vuejs.org/)
-- [Chart.js](https://www.chartjs.org/)
-- [vite-plugin-pwa](https://vite-pwa-org.netlify.app/)
-- LocalStorage (for offline persistence)
+### Home screen
+
+<img src="./assets/home.png" alt="Home screen" width="300"/>
+
+- Tap to log a cigarette
+- Time since last cigarette
+- Soft neutral background (`#f5f5f5`)
 
 ---
 
-## 🚀 Getting Started
+### Time-based tracking
 
-### 1. Install Dependencies
+<img src="./assets/time-log.png" alt="Time-based log" width="300"/>
+
+- View all smoking events per day
+- Modify or delete entries
+- Smooth layout, iOS-friendly inputs
+
+---
+
+### Daily history summary
+
+<img src="./assets/history.png" alt="History summary" width="300"/>
+
+- Number of cigarettes per day
+- Nicotine intake (customizable)
+- Difference vs previous day (with color)
+
+---
+
+### Statistics view
+
+<img src="./assets/stats.png" alt="Statistics screen" width="300"/>
+
+- 📈 Line chart: cigarettes per day
+- 📊 Weekly averages
+- Clean and readable
+
+---
+
+### Settings
+
+<img src="./assets/settings.png" alt="Settings screen" width="300"/>
+
+- Set nicotine per cigarette
+- Stored in localStorage
+- Persistent across sessions
+
+---
+
+### App icon
+
+<img src="./assets/icon.jpg" alt="App icon" width="100"/>
+
+- Installable as a native-like PWA
+- Looks great on iOS home screen
+
+---
+
+## ✨ Features
+
+- One-tap logging
+- Daily and time-based history
+- Weekly stats with charts
+- Offline-first & localStorage only
+- Lightweight, responsive UI
+
+---
+
+## 🧱 Tech Stack
+
+- **Vue 3** (Composition API)
+- **Tailwind CSS** (flat + mobile-first)
+- **Chart.js** (line chart)
+- **localStorage** (no backend)
+- **PWA** support (manifest + meta viewport)
+
+---
+
+## 📦 Setup
 
 ```bash
 npm install
+npm run dev
