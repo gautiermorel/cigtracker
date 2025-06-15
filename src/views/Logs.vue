@@ -1,15 +1,13 @@
 <template>
   <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen">
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Données</h2>
+    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Logs</h2>
 
     <div v-for="(smokes, date) in orderedHistory" :key="date" class="mb-8">
-      <!-- Date -->
       <div class="text-base font-medium text-neutral-700 mb-3">{{ date }}</div>
 
-      <!-- Liste -->
       <ul class="space-y-2">
         <li
-          v-for="(timestamp, i) in smokes"
+          v-for="(_timestamp, i) in smokes"
           :key="i"
           class="flex items-center justify-between gap-3 border border-neutral-200 rounded-lg px-4 py-2 bg-white"
         >
@@ -28,7 +26,6 @@
         </li>
       </ul>
 
-      <!-- Ajouter -->
       <div class="mt-4">
         <button
           @click="addSmoke(date)"

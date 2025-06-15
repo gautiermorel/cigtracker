@@ -2,9 +2,11 @@
   <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen">
     <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Paramètres</h2>
 
-    <!-- Champ nicotine -->
     <div class="mb-4">
-      <label for="nicotine" class="block text-sm font-medium text-neutral-700 mb-1">
+      <label
+        for="nicotine"
+        class="block text-sm font-medium text-neutral-700 mb-1"
+      >
         Nicotine par cigarette (mg)
       </label>
       <input
@@ -17,7 +19,6 @@
       />
     </div>
 
-    <!-- Bouton d'enregistrement -->
     <button
       @click="save"
       class="w-full text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition"
@@ -25,24 +26,25 @@
       Enregistrer
     </button>
 
-    <!-- Message de confirmation -->
     <transition name="fade">
-      <p v-if="saved" class="text-sm text-green-600 mt-3">Paramètre sauvegardé ✓</p>
+      <p v-if="saved" class="text-sm text-green-600 mt-3">
+        Paramètre sauvegardé ✓
+      </p>
     </transition>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref } from "vue";
 
-const nicotine = ref(parseFloat(localStorage.getItem('nicotinePerCig')) || 0.6)
-const saved = ref(false)
+const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 0.6);
+const saved = ref(false);
 
 const save = () => {
-  localStorage.setItem('nicotinePerCig', nicotine.value)
-  saved.value = true
-  setTimeout(() => (saved.value = false), 2000)
-}
+  localStorage.setItem("nicotinePerCig", nicotine.value);
+  saved.value = true;
+  setTimeout(() => (saved.value = false), 2000);
+};
 </script>
 
 <style scoped>
