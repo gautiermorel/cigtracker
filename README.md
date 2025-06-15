@@ -4,7 +4,7 @@ This is a mobile-first Progressive Web App (PWA) built with **Vue 3**, **Vue Rou
 
 ## 📱 Features
 
-### 🔢 Counter
+### 🔢 Home
 - Track how many cigarettes you've smoked today
 - Live timer since your last cigarette
 - One-tap "➕" button to add a cigarette

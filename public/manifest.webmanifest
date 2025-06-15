@@ -1,5 +1,5 @@
 {
-  "name": "Smoking Tracker",
+  "name": "CigTracker",
   "short_name": "Tracker",
   "start_url": ".",
   "display": "standalone",

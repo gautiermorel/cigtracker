@@ -9,7 +9,7 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'icon-192.png'],
       manifest: {
-        name: 'Smoking Tracker',
+        name: 'CigTracker',
         short_name: 'Tracker',
         description: 'Track your cigarette consumption',
         theme_color: '#ffffff',

@@ -1,19 +1,39 @@
 <template>
-  <nav class="fixed bottom-4 left-1/2 transform -translate-x-1/2 w-[95%] max-w-md bg-white/30 backdrop-blur-lg rounded-full shadow-md border border-white/20 px-6 py-3 flex justify-between items-center text-gray-800">
-    <RouterLink v-for="item in navItems" :key="item.path" :to="item.path" class="flex flex-col items-center text-sm">
-      <span class="text-xl">{{ item.icon }}</span>
+  <nav
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 
+           w-[92%] max-w-sm h-16 
+           bg-white/80 border border-neutral-200 
+           rounded-full px-6 
+           flex justify-between items-center 
+           backdrop-blur-md"
+  >
+    <RouterLink
+      v-for="item in navItems"
+      :key="item.path"
+      :to="item.path"
+      class="flex items-center justify-center w-10 h-10 relative"
+      :class="{ 'text-black': $route.path === item.path, 'text-neutral-400': $route.path !== item.path }"
+    >
+      <component :is="item.icon" class="w-6 h-6" />
+      <span
+        v-if="$route.path === item.path"
+        class="absolute bottom-0 left-1/2 -translate-x-1/2 w-1.5 h-1.5 bg-black rounded-full"
+      />
     </RouterLink>
   </nav>
 </template>
 
 <script setup>
-import { RouterLink } from 'vue-router';
+import { RouterLink, useRoute } from 'vue-router'
+import { Home, ClipboardList, CalendarDays, BarChart3, Settings } from 'lucide-vue-next'
+
+const route = useRoute()
 
 const navItems = [
-  { path: '/', icon: '🏠' },
-  { path: '/edit-history', icon: '📋' },
-  { path: '/history', icon: '📅' },
-  { path: '/stats', icon: '📊' },
-  { path: '/settings', icon: '⚙️' }
-];
+  { path: '/', icon: Home },
+  { path: '/edit-history', icon: ClipboardList },
+  { path: '/history', icon: CalendarDays },
+  { path: '/stats', icon: BarChart3 },
+  { path: '/settings', icon: Settings }
+]
 </script>
