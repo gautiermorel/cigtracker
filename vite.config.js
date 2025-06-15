@@ -10,9 +10,9 @@ export default defineConfig({
       includeAssets: ['favicon.svg', 'icon-192.png'],
       manifest: {
         name: 'CigTracker',
-        short_name: 'Tracker',
+        short_name: 'CigTracker',
         description: 'Track your cigarette consumption',
-        theme_color: '#ffffff',
+        theme_color: '#f5f5f5',
         icons: [
           {
             src: 'icon-192.png',

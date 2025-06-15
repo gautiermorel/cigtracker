@@ -1,6 +1,6 @@
 <template>
-  <div class="px-4 py-6 max-w-xl mx-auto">
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Historique complet</h2>
+  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen">
+    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Données</h2>
 
     <div v-for="(smokes, date) in orderedHistory" :key="date" class="mb-8">
       <!-- Date -->
