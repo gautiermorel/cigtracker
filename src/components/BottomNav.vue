@@ -1,6 +1,6 @@
 <template>
   <nav
-    class="fixed bottom-5 left-1/2 -translate-x-1/2 w-[92%] max-w-sm h-16 bg-white/80 border border-neutral-200 rounded-full px-6 flex justify-between items-center backdrop-blur-md"
+    class="fixed bottom-5 left-1/2 -translate-x-1/2 z-20 w-[92%] max-w-sm h-16 bg-white/80 border border-neutral-200 rounded-full px-6 flex justify-between items-center backdrop-blur-md"
   >
     <RouterLink
       v-for="item in navItems"
