@@ -33,7 +33,6 @@ import {
 
 const navItems = [
   { path: "/", icon: Home },
-  { path: "/logs", icon: ClipboardList },
   { path: "/history", icon: CalendarDays },
   { path: "/stats", icon: BarChart3 },
   { path: "/settings", icon: Settings },

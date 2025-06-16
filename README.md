@@ -19,15 +19,6 @@ Built with **Vue 3**, **Tailwind CSS**, and **Chart.js**.
 
 ---
 
-### Time-based tracking
-
-<img src="./assets/time-log.png" alt="Time-based log" width="300"/>
-
-- View all smoking events per day
-- Modify or delete entries
-
----
-
 ### Daily history summary
 
 <img src="./assets/history.png" alt="History summary" width="300"/>
@@ -35,6 +26,8 @@ Built with **Vue 3**, **Tailwind CSS**, and **Chart.js**.
 - Number of cigarettes per day
 - Nicotine intake
 - Difference vs previous day
+- View all smoking events per day
+- Modify or delete entries
 
 ---
 

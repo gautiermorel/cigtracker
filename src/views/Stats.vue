@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen">
+  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen pb-28">
     <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistiques</h2>
 
     <div class="bg-white border border-neutral-200 rounded-xl p-4">

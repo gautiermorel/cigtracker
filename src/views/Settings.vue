@@ -1,5 +1,5 @@
 <template>
-  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8">
+  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
     <h2 class="text-2xl font-semibold text-neutral-900">Paramètres</h2>
 
     <!-- Bloc Nicotine -->
