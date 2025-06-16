@@ -13,7 +13,8 @@
     "lucide-vue-next": "^0.515.0",
     "luxon": "^3.6.1",
     "vue": "^3.4.0",
-    "vue-router": "^4.2.0"
+    "vue-router": "^4.2.0",
+    "vue3-touch-events": "^5.0.13"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.0.0",
