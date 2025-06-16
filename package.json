@@ -1,12 +1,13 @@
 {
   "name": "cigtracker",
-  "version": "1.0.0",
+  "version": "1.0.5",
   "type": "module",
   "description": "An app to track cigarette consumption",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "deploy": "node deploy.js"
   },
   "dependencies": {
     "chart.js": "^4.4.0",

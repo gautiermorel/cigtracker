@@ -1,8 +1,9 @@
 <template>
-  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
+  <div
+    class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
+  >
     <h2 class="text-2xl font-semibold text-neutral-900">Paramètres</h2>
 
-    <!-- Bloc Nicotine -->
     <section class="bg-white p-4 rounded-lg shadow">
       <label
         for="nicotine"
@@ -33,10 +34,13 @@
       </transition>
     </section>
 
-    <!-- Bloc Export / Import -->
     <section class="bg-white p-4 rounded-lg shadow">
-      <h3 class="font-semibold text-lg text-neutral-800 mb-4">Export / Import</h3>
-      <div class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0">
+      <h3 class="font-semibold text-lg text-neutral-800 mb-4">
+        Export / Import
+      </h3>
+      <div
+        class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0"
+      >
         <button
           @click="exportData"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition"
@@ -66,12 +70,18 @@
         </p>
       </transition>
     </section>
+
+    <div class="text-sm text-neutral-500 mt-6">
+      Version de l’application : <strong>{{ version }}</strong>
+    </div>
   </div>
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, onMounted } from "vue";
 import { exportData, importDataFromFile } from "../components/ExportImport.js";
+
+const version = ref("");
 
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 0.6);
 const saved = ref(false);
@@ -100,6 +110,15 @@ const handleImport = async (e) => {
     setTimeout(() => (importError.value = ""), 3000);
   }
 };
+
+// Charger la version depuis package.json (côté client)
+onMounted(async () => {
+  const res = await fetch("/version.json");
+  if (res.ok) {
+    const pkg = await res.json();
+    version.value = pkg.version;
+  }
+});
 </script>
 
 <style scoped>
