@@ -111,7 +111,6 @@ const handleImport = async (e) => {
   }
 };
 
-// Charger la version depuis package.json (côté client)
 onMounted(async () => {
   const res = await fetch("/version.json");
   if (res.ok) {

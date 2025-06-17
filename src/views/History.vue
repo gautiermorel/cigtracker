@@ -2,20 +2,6 @@
   <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen pb-28">
     <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Historique</h2>
 
-    <div class="mb-6 flex items-center gap-3">
-      <input
-        type="date"
-        v-model="newDate"
-        class="border border-neutral-300 px-3 py-2 rounded-md text-sm text-neutral-800 focus:ring-2 focus:ring-blue-500"
-      />
-      <button
-        @click="addDay"
-        class="bg-blue-600 text-white px-4 py-2 rounded-md text-sm hover:bg-blue-700 transition"
-      >
-        + Ajouter un jour
-      </button>
-    </div>
-
     <ul class="space-y-4">
       <li
         v-for="(entry, index) in orderedHistory"
@@ -35,9 +21,7 @@
             </div>
             <div class="text-sm text-neutral-700">
               Nicotine :
-              <strong
-                >{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong
-              >
+              <strong>{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong>
             </div>
           </div>
           <div class="text-sm text-neutral-500">
@@ -66,29 +50,25 @@
                     )
                   "
                 />
-                <div class="flex flex-col">
-                  <span v-if="i > 0" class="text-xs text-neutral-500">
-                    +{{
-                      computeDiffMinutes(
-                        sorted[entry.date][i - 1].time,
-                        item.time,
-                        entry.date
-                      )
-                    }}min
-                  </span>
-                  <span v-else class="text-xs text-neutral-400">–</span>
-                  <span
-                    v-if="isNextDay(item.time)"
-                    class="text-xs text-blue-500"
-                    >→ {{ getNextDate(entry.date) }}</span
-                  >
-                </div>
+                <span v-if="i > 0" class="text-xs text-neutral-500">
+                  +{{
+                    computeDiffMinutes(
+                      sorted[entry.date][i - 1].time,
+                      item.time,
+                      entry.date
+                    )
+                  }}min
+                </span>
+                <span v-else class="text-xs text-neutral-400">–</span>
+                <span v-if="isNextDay(item.time)" class="text-xs text-blue-500">
+                  → {{ getNextDate(entry.date) }}
+                </span>
               </div>
               <button
                 @click="removeSmoke(entry.date, item.realIndex)"
                 class="text-red-500 text-sm hover:underline"
               >
-                Supprimer
+                <Trash2 class="w-4 h-4" />
               </button>
             </li>
           </ul>
@@ -106,6 +86,7 @@
 
 <script setup>
 import { ref, reactive, computed, onMounted } from "vue";
+import { Trash2 } from "lucide-vue-next";
 import { DateTime } from "luxon";
 
 const STORAGE_KEY = "smokeEvents";
@@ -116,7 +97,6 @@ const grouped = reactive({});
 const timeInputs = reactive({});
 const sorted = reactive({});
 const expandedDay = ref(null);
-const newDate = ref("");
 
 const toggle = (date) => {
   expandedDay.value = expandedDay.value === date ? null : date;
@@ -157,7 +137,7 @@ const sortAll = () => {
         ts,
         time,
         realIndex: i,
-        sortKey: isEarly ? h + m / 60 + 24 : h + m / 60, // 00:00 → 24.0, 01:30 → 25.5
+        sortKey: isEarly ? h + m / 60 + 24 : h + m / 60,
       };
     });
     sorted[date] = combined.sort((a, b) => a.sortKey - b.sortKey);
@@ -208,7 +188,7 @@ const isNextDay = (time) => {
 const getNextDate = (date) => {
   return DateTime.fromFormat(date, "yyyy-MM-dd")
     .plus({ days: 1 })
-    .toFormat("yyyy-MM-dd");
+    .toFormat("dd/MM/yy");
 };
 
 let debounceTimeout = null;
@@ -258,9 +238,15 @@ const save = () => {
 };
 
 const addSmoke = (date) => {
-  const dt = DateTime.fromFormat(`${date} 12:00`, "yyyy-MM-dd HH:mm", {
-    zone: "local",
+  const now = DateTime.local();
+  const dt = now.set({
+    year: Number(date.slice(0, 4)),
+    month: Number(date.slice(5, 7)),
+    day: Number(date.slice(8, 10)),
+    hour: now.hour,
+    minute: now.minute,
   }).toUTC();
+
   const ts = dt.toMillis();
   const targetDate = getShiftedDateKey(ts);
 
@@ -270,23 +256,27 @@ const addSmoke = (date) => {
   }
 
   grouped[targetDate].push(ts);
-  timeInputs[targetDate].push("12:00");
+  timeInputs[targetDate].push(now.toFormat("HH:mm"));
+
   save();
   sortAll();
 };
 
 const removeSmoke = (date, index) => {
+  const confirmed = confirm("Supprimer cette cigarette ?");
+  if (!confirmed) return;
+
   grouped[date].splice(index, 1);
   timeInputs[date].splice(index, 1);
+
+  if (grouped[date].length === 0) {
+    delete grouped[date];
+    delete timeInputs[date];
+    delete sorted[date];
+    if (expandedDay.value === date) expandedDay.value = null;
+  }
+
   save();
   sortAll();
-};
-
-const addDay = () => {
-  if (!newDate.value || grouped[newDate.value]) return;
-  grouped[newDate.value] = [];
-  timeInputs[newDate.value] = [];
-  sorted[newDate.value] = [];
-  newDate.value = "";
 };
 </script>

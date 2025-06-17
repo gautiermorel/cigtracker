@@ -23,13 +23,7 @@
 
 <script setup>
 import { RouterLink } from "vue-router";
-import {
-  Home,
-  ClipboardList,
-  CalendarDays,
-  BarChart3,
-  Settings,
-} from "lucide-vue-next";
+import { Home, CalendarDays, BarChart3, Settings } from "lucide-vue-next";
 
 const navItems = [
   { path: "/", icon: Home },

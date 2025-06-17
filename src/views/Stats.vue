@@ -3,22 +3,7 @@
     <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistiques</h2>
 
     <div class="bg-white border border-neutral-200 rounded-xl p-4">
-      <canvas ref="chartRef" height="200"></canvas>
-    </div>
-
-    <div class="mt-6 space-y-2">
-      <div class="text-sm text-neutral-700">
-        Moyenne semaine dernière :
-        <span class="font-medium text-neutral-900">{{ avg(0) }}</span>
-      </div>
-      <div class="text-sm text-neutral-700">
-        Avant-dernière semaine :
-        <span class="font-medium text-neutral-900">{{ avg(1) }}</span>
-      </div>
-      <div class="text-sm text-neutral-700">
-        Première semaine :
-        <span class="font-medium text-neutral-900">{{ avg(2) }}</span>
-      </div>
+      <canvas ref="chartRef" height="400"></canvas>
     </div>
   </div>
 </template>
@@ -47,25 +32,24 @@ onMounted(() => {
 
   if (chartRef.value) {
     new Chart(chartRef.value, {
-      type: "line",
+      type: "bar",
       data: {
         labels: grouped.value.map((entry) => entry.date),
         datasets: [
           {
             label: "Cigarettes / jour",
             data: grouped.value.map((entry) => entry.count),
-            borderColor: "#dc2626", // rouge Tailwind
+            borderColor: "#dc2626",
             backgroundColor: "#fecaca",
-            tension: 0.25,
-            fill: false,
           },
         ],
       },
       options: {
+        indexAxis: "y",
         responsive: true,
         maintainAspectRatio: false,
         scales: {
-          y: {
+          x: {
             beginAtZero: true,
             precision: 0,
           },
