@@ -23,6 +23,9 @@
               Nicotine :
               <strong>{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong>
             </div>
+            <div class="text-sm text-neutral-700">
+              Coût : <strong>{{ (entry.count * pricePerCig).toFixed(2) }} €</strong>
+            </div>
           </div>
           <div class="text-sm text-neutral-500">
             Diff. : <span :class="diffColor(index)">{{ diff(index) }}</span>
@@ -51,13 +54,7 @@
                   "
                 />
                 <span v-if="i > 0" class="text-xs text-neutral-500">
-                  +{{
-                    computeDiffMinutes(
-                      sorted[entry.date][i - 1].time,
-                      item.time,
-                      entry.date
-                    )
-                  }}min
+                  +{{ computeDiffMinutes(sorted[entry.date][i - 1].time, item.time, entry.date) }}min
                 </span>
                 <span v-else class="text-xs text-neutral-400">–</span>
                 <span v-if="isNextDay(item.time)" class="text-xs text-blue-500">
@@ -90,7 +87,8 @@ import { Trash2 } from "lucide-vue-next";
 import { DateTime } from "luxon";
 
 const STORAGE_KEY = "smokeEvents";
-const nicotinePerCig = 0.6;
+const nicotinePerCig = parseFloat(localStorage.getItem("nicotinePerCig")) || 0.6;
+const pricePerCig = parseFloat(localStorage.getItem("pricePerCig")) || 0.5;
 
 const events = ref([]);
 const grouped = reactive({});

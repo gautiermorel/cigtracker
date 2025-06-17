@@ -1,6 +1,8 @@
 <template>
-  <router-view />
-  <BottomNav />
+  <div class="bg-neutral-100">
+    <router-view />
+    <BottomNav />
+  </div>
 </template>
 
 <script setup>

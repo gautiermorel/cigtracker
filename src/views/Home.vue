@@ -8,7 +8,6 @@
       <h1 class="text-3xl font-semibold text-neutral-900 mb-1">
         {{ count }} cigarette<span v-if="count > 1">s</span>
       </h1>
-
       <p class="text-sm text-neutral-500 mb-6">
         Dernière :
         <span v-if="timeSinceLast !== null">{{ timeSinceLast }} min</span>
@@ -26,20 +25,20 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 const STORAGE_KEY = "smokeEvents";
 const events = ref([]);
 
-onMounted(() => {
-  const saved = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-  events.value = saved;
-});
+const updateEvents = () => {
+  events.value = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+};
 
 const addCigarette = () => {
   const now = Date.now();
   events.value.push(now);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(events.value));
+  updateTimeSinceLast();
 };
 
 const getLocalDayBounds = () => {
@@ -66,14 +65,24 @@ const filteredEvents = computed(() => {
 });
 
 const count = computed(() => filteredEvents.value.length);
+const dailyCost = computed(() => (count.value * pricePerCig).toFixed(2));
 
-const timeSinceLast = computed(() => {
-  if (events.value.length === 0) return null;
+const timeSinceLast = ref(null);
 
+const updateTimeSinceLast = () => {
   const filtered = filteredEvents.value;
-  if (filtered.length === 0) return null;
+  if (filtered.length === 0) {
+    timeSinceLast.value = null;
+  } else {
+    const last = filtered[filtered.length - 1];
+    timeSinceLast.value = Math.floor((Date.now() - last) / 60000);
+  }
+};
 
-  const last = filtered[filtered.length - 1];
-  return Math.floor((Date.now() - last) / 60000);
+onMounted(() => {
+  updateEvents();
+  updateTimeSinceLast();
+  const interval = setInterval(updateTimeSinceLast, 60000);
+  onBeforeUnmount(() => clearInterval(interval));
 });
 </script>
