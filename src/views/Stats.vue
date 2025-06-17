@@ -4,16 +4,16 @@
   >
     <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistiques</h2>
 
+    <!-- Graphique 2 -->
+    <div class="bg-white rounded-lg shadow p-4">
+      <h3 class="text-lg font-medium mb-4">Routine</h3>
+      <canvas ref="routineChartRef" height="450"></canvas>
+    </div>
+
     <!-- Graphique 1 -->
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-medium mb-4">7 derniers jours</h3>
       <canvas ref="barChartRef"></canvas>
-    </div>
-
-    <!-- Graphique 2 -->
-    <div class="bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-medium mb-4">Routine quotidienne (heures)</h3>
-      <canvas ref="routineChartRef" height="450"></canvas>
     </div>
   </div>
 </template>
@@ -187,7 +187,7 @@ onMounted(() => {
           labels: routineLabels,
           offset: true,
           grid: { display: false },
-          title: { display: true, text: "Jour" },
+          title: { display: true, text: "" },
         },
         y: {
           type: "linear",
@@ -198,7 +198,7 @@ onMounted(() => {
             stepSize: 2,
             callback: (v) => `${String(Math.floor(v)).padStart(2, "0")}:00`,
           },
-          title: { display: true, text: "Heure" },
+          title: { display: true, text: "" },
         },
       },
     },
