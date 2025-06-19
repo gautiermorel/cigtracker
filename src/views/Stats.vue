@@ -2,15 +2,15 @@
   <div
     class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
   >
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistiques</h2>
+    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistics</h2>
 
-    <!-- Graphique 2 -->
-    <div class="bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-medium mb-4">Routine</h3>
-      <canvas ref="routineChartRef" height="450"></canvas>
+    <!-- Graph #2 -->
+    <div class="bg-white rounded-lg shadow pr-[1rem]">
+      <h3 class="p-4 text-lg font-medium mb-4">Routine</h3>
+      <canvas ref="routineChartRef" height="280"></canvas>
     </div>
 
-    <!-- Graphique 1 -->
+    <!-- Graph #1 -->
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-medium mb-4">7 derniers jours</h3>
       <canvas ref="barChartRef"></canvas>
@@ -32,7 +32,9 @@ import {
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
 import "chartjs-adapter-date-fns";
 
-// Enregistrement des éléments Chart.js
+const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
+const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
+
 Chart.register(
   CategoryScale,
   LinearScale,
@@ -51,23 +53,31 @@ const routineChartRef = ref(null);
 onMounted(() => {
   const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
 
-  // Récupère les 7 derniers jours
   const now = new Date();
-  const cutoff = new Date();
-  cutoff.setDate(now.getDate() - 6);
-  cutoff.setHours(0, 0, 0, 0);
 
-  const recentDates = raw
+  const routineStart = new Date();
+  routineStart.setDate(now.getDate() - 6);
+  routineStart.setHours(4, 0, 0, 0);
+
+  const routineEnd = new Date();
+  routineEnd.setDate(now.getDate() + 1);
+  routineEnd.setHours(4, 0, 0, 0);
+
+  const filteredDates = raw
     .map((ts) => new Date(ts))
-    .filter((d) => d >= cutoff)
-    .sort((a, b) => a.getTime() - b.getTime());
+    .filter((d) => d >= routineStart && d < routineEnd)
+    .sort((a, b) => a - b);
 
-  // === Graphique 1 : histogramme ===
+  // --- Graph #1 (daily counts with 4am-to-4am days) ---
+  const barStart = new Date();
+  barStart.setDate(now.getDate() - 6);
+  barStart.setHours(4, 0, 0, 0);
+
   const barLabels = [];
   const barCounts = [];
 
   for (let i = 0; i < 7; i++) {
-    const d = new Date(cutoff);
+    const d = new Date(barStart);
     d.setDate(d.getDate() + i);
     const label = d.toLocaleDateString("fr-FR", {
       weekday: "short",
@@ -77,8 +87,14 @@ onMounted(() => {
     barCounts.push(0);
   }
 
-  recentDates.forEach((d) => {
-    const index = Math.floor((d - cutoff) / (1000 * 60 * 60 * 24));
+  filteredDates.forEach((d) => {
+    const hours = d.getHours() + d.getMinutes() / 60;
+    const adjusted = new Date(d);
+    if (hours < 4) {
+      adjusted.setDate(adjusted.getDate() - 1);
+    }
+
+    const index = Math.floor((adjusted - barStart) / (1000 * 60 * 60 * 24));
     if (index >= 0 && index < 7) {
       barCounts[index]++;
     }
@@ -110,49 +126,53 @@ onMounted(() => {
     },
   });
 
-  // === Graphique 2 : heatmap horizontale fine (routine) ===
-
+  // --- Graph #2 (hourly routine matrix 4am–4am) ---
   const formatLabel = (d) =>
     d.toLocaleDateString("fr-FR", {
       weekday: "short",
-      day: "2-digit",
-      month: "2-digit",
+      // day: "2-digit",
+      // month: "2-digit",
+      timeZone: "Europe/Paris",
     });
 
   const routineLabels = [];
   for (let i = 0; i < 7; i++) {
-    const d = new Date(cutoff);
+    const d = new Date(routineStart);
     d.setDate(d.getDate() + i);
     routineLabels.push(formatLabel(d));
   }
 
   const routineData = [];
-  let lastByDay = {}; // stocke dernière cigarette pour chaque jour
+  const lastByDay = {};
 
-  recentDates.forEach((d) => {
-    const label = formatLabel(d);
-    const y = d.getHours() + d.getMinutes() / 60;
-    const key = label;
+  filteredDates.forEach((eventDate) => {
+    const hour = eventDate.getHours();
+    const minutes = eventDate.getMinutes();
+    let y = hour + minutes / 60;
 
-    let color = "#3b82f6"; // bleu par défaut
-    const currentTime = d.getTime();
-
-    if (lastByDay[key]) {
-      const diff = (currentTime - lastByDay[key]) / 60000; // en minutes
-      if (diff < 30) {
-        color = "#ef4444"; // rouge
-      } else if (diff < 60) {
-        color = "#f97316"; // orange
-      }
+    const adjustedDate = new Date(eventDate);
+    if (y < 4) {
+      adjustedDate.setDate(adjustedDate.getDate() - 1);
+      y += 24;
     }
 
-    lastByDay[key] = currentTime;
+    const label = formatLabel(adjustedDate);
+    const timestamp = eventDate.getTime();
+
+    let color = "#3b82f6";
+    if (lastByDay[label]) {
+      const diff = (timestamp - lastByDay[label]) / 60000;
+      if (diff < threshold1) color = "#ef4444";
+      else if (diff < threshold2) color = "#f97316";
+    }
+    lastByDay[label] = timestamp;
 
     routineData.push({
       x: label,
       y,
       v: 1,
       color,
+      __sourceDate: eventDate,
     });
   });
 
@@ -161,7 +181,7 @@ onMounted(() => {
     data: {
       datasets: [
         {
-          abel: "Cigarettes",
+          label: "Cigarettes",
           data: routineData,
           backgroundColor: (ctx) => ctx.raw.color,
           width: ({ chart }) => (chart.chartArea?.width || 0) / 7 - 3,
@@ -174,9 +194,22 @@ onMounted(() => {
       plugins: {
         tooltip: {
           callbacks: {
-            title: (ctx) => `Jour : ${ctx[0].raw.x}`,
-            label: (ctx) =>
-              `${ctx.raw.y.toFixed(2).replace(".", ":")} — 1 cigarette`,
+            title: (ctx) =>
+              new Date(ctx[0].raw.__sourceDate).toLocaleString("fr-FR", {
+                weekday: "long",
+                day: "2-digit",
+                month: "short",
+                hour: "2-digit",
+                minute: "2-digit",
+                timeZone: "Europe/Paris",
+              }),
+            label: (ctx) => {
+              const hour = Math.floor(ctx.raw.y % 24);
+              const minute = Math.round((ctx.raw.y % 1) * 60);
+              return `${hour.toString().padStart(2, "0")}h${minute
+                .toString()
+                .padStart(2, "0")} – 1 cigarette`;
+            },
           },
         },
         legend: { display: false },
@@ -187,18 +220,16 @@ onMounted(() => {
           labels: routineLabels,
           offset: true,
           grid: { display: false },
-          title: { display: true, text: "" },
         },
         y: {
           type: "linear",
-          min: 0,
-          max: 24,
+          min: 4,
+          max: 28,
           reverse: true,
           ticks: {
             stepSize: 2,
-            callback: (v) => `${String(Math.floor(v)).padStart(2, "0")}:00`,
+            callback: (v) => `${String(Math.floor(v % 24)).padStart(2, "0")}h`,
           },
-          title: { display: true, text: "" },
         },
       },
     },

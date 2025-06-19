@@ -29,6 +29,7 @@ import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 
 const STORAGE_KEY = "smokeEvents";
 const events = ref([]);
+const pricePerCig = parseFloat(localStorage.getItem("pricePerCig")) || 0.5;
 
 const updateEvents = () => {
   events.value = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -47,11 +48,11 @@ const getLocalDayBounds = () => {
   const month = now.getMonth();
   const day = now.getDate();
 
-  const start = new Date(year, month, day, 2, 0, 0).getTime();
-  let end = new Date(year, month, day + 1, 2, 0, 0).getTime();
+  const start = new Date(year, month, day, 4, 0, 0).getTime();
+  let end = new Date(year, month, day + 1, 4, 0, 0).getTime();
 
   if (Date.now() < start) {
-    const newStart = new Date(year, month, day - 1, 2, 0, 0).getTime();
+    const newStart = new Date(year, month, day - 1, 4, 0, 0).getTime();
     end = start;
     return { start: newStart, end };
   }

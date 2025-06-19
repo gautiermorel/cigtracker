@@ -87,7 +87,7 @@ import { Trash2 } from "lucide-vue-next";
 import { DateTime } from "luxon";
 
 const STORAGE_KEY = "smokeEvents";
-const nicotinePerCig = parseFloat(localStorage.getItem("nicotinePerCig")) || 0.6;
+const nicotinePerCig = parseFloat(localStorage.getItem("nicotinePerCig")) || 4;
 const pricePerCig = parseFloat(localStorage.getItem("pricePerCig")) || 0.5;
 
 const events = ref([]);
@@ -102,7 +102,7 @@ const toggle = (date) => {
 
 const getShiftedDateKey = (timestamp) => {
   const dt = DateTime.fromMillis(timestamp).toLocal();
-  const shifted = dt < dt.set({ hour: 2 }) ? dt.minus({ days: 1 }) : dt;
+  const shifted = dt < dt.set({ hour: 4 }) ? dt.minus({ days: 1 }) : dt;
   return shifted.toFormat("yyyy-MM-dd");
 };
 
@@ -130,7 +130,7 @@ const sortAll = () => {
     const combined = grouped[date].map((ts, i) => {
       const time = timeInputs[date][i];
       const [h, m] = time.split(":").map(Number);
-      const isEarly = h < 2;
+      const isEarly = h < 4;
       return {
         ts,
         time,
@@ -180,7 +180,7 @@ const computeDiffMinutes = (time1, time2, baseDate) => {
 
 const isNextDay = (time) => {
   const [h] = time.split(":").map(Number);
-  return h < 2;
+  return h < 4;
 };
 
 const getNextDate = (date) => {
