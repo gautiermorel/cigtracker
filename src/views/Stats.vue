@@ -1,11 +1,5 @@
 <template>
-  <div
-    class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
-  >
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">
-      {{ $t("stats") }}
-    </h2>
-
+  <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
     <!-- Graph #2 -->
     <div class="bg-white rounded-lg shadow pr-[1rem]">
       <h3 class="p-4 text-lg font-medium mb-4">{{ $t("routine") }}</h3>
@@ -82,7 +76,7 @@ onMounted(() => {
   for (let i = 0; i < 7; i++) {
     const d = new Date(barStart);
     d.setDate(d.getDate() + i);
-    const label = d.toLocaleDateString(language === 'fr' ? "fr-FR": "en-EN", {
+    const label = d.toLocaleDateString(language === "fr" ? "fr-FR" : "en-EN", {
       weekday: "short",
       day: "2-digit",
     });
@@ -131,7 +125,7 @@ onMounted(() => {
 
   // --- Graph #2 (hourly routine matrix 4am–4am) ---
   const formatLabel = (d) =>
-    d.toLocaleDateString(language === 'fr' ? "fr-FR": "en-EN", {
+    d.toLocaleDateString(language === "fr" ? "fr-FR" : "en-EN", {
       weekday: "short",
       // day: "2-digit",
       // month: "2-digit",

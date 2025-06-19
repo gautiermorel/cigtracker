@@ -1,7 +1,5 @@
 <template>
-  <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen pb-28">
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">{{ $t("history") }}</h2>
-
+  <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen pb-28">
     <ul class="space-y-4">
       <li
         v-for="(entry, index) in orderedHistory"
@@ -21,10 +19,13 @@
             </div>
             <div class="text-sm text-neutral-700">
               Nicotine :
-              <strong>{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong>
+              <strong
+                >{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong
+              >
             </div>
             <div class="text-sm text-neutral-700">
-              {{ $t("cost") }} : <strong>{{ (entry.count * pricePerCig).toFixed(2) }} €</strong>
+              {{ $t("cost") }} :
+              <strong>{{ (entry.count * pricePerCig).toFixed(2) }} €</strong>
             </div>
           </div>
           <div class="text-sm text-neutral-500">
@@ -54,7 +55,13 @@
                   "
                 />
                 <span v-if="i > 0" class="text-xs text-neutral-500">
-                  +{{ computeDiffMinutes(sorted[entry.date][i - 1].time, item.time, entry.date) }}min
+                  +{{
+                    computeDiffMinutes(
+                      sorted[entry.date][i - 1].time,
+                      item.time,
+                      entry.date
+                    )
+                  }}min
                 </span>
                 <span v-else class="text-xs text-neutral-400">–</span>
                 <span v-if="isNextDay(item.time)" class="text-xs text-blue-500">
@@ -237,13 +244,15 @@ const save = () => {
 
 const addSmoke = (date) => {
   const now = DateTime.local();
-  const dt = now.set({
-    year: Number(date.slice(0, 4)),
-    month: Number(date.slice(5, 7)),
-    day: Number(date.slice(8, 10)),
-    hour: now.hour,
-    minute: now.minute,
-  }).toUTC();
+  const dt = now
+    .set({
+      year: Number(date.slice(0, 4)),
+      month: Number(date.slice(5, 7)),
+      day: Number(date.slice(8, 10)),
+      hour: now.hour,
+      minute: now.minute,
+    })
+    .toUTC();
 
   const ts = dt.toMillis();
   const targetDate = getShiftedDateKey(ts);

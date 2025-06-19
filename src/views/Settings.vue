@@ -1,9 +1,5 @@
 <template>
-  <div
-    class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
-  >
-    <h2 class="text-2xl font-semibold text-neutral-900">{{ $t("settings") }}</h2>
-
+  <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
     <section class="bg-white p-4 rounded-lg shadow mt-6 space-y-4">
       <div>
         <label class="block text-sm font-medium text-neutral-700 mb-2">

@@ -1,12 +1,16 @@
 <template>
   <div class="bg-neutral-100 relative min-h-screen">
-    <ProfileAvatar />
-    <router-view />
+    <Header />
+
+    <div class="px-6">
+      <router-view />
+    </div>
+
     <BottomNav />
   </div>
 </template>
 
 <script setup>
+import Header from "./components/Header.vue";
 import BottomNav from "./components/BottomNav.vue";
-import ProfileAvatar from "./components/ProfileAvatar.vue";
 </script>

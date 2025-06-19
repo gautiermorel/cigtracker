@@ -5,10 +5,30 @@ import Stats from '../views/Stats.vue';
 import Settings from '../views/Settings.vue';
 
 const routes = [
-  { path: '/', component: Home },
-  { path: '/history', component: History },
-  { path: '/stats', component: Stats },
-  { path: '/settings', component: Settings }
+  {
+    path: '/',
+    name: 'Home',
+    component: Home,
+    meta: { key: 'home' }
+  },
+  {
+    path: '/history',
+    name: 'History',
+    component: History,
+    meta: { key: 'history' }
+  },
+  {
+    path: '/stats',
+    name: 'Stats',
+    component: Stats,
+    meta: { key: 'stats' }
+  },
+  {
+    path: '/settings',
+    name: 'Settings',
+    component: Settings,
+    meta: { key: 'settings' }
+  }
 ];
 
 export default createRouter({

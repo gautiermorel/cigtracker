@@ -1,8 +1,8 @@
-// src/i18n.js
 import { createI18n } from "vue-i18n";
 
 const messages = {
   en: {
+    home: "Home",
     stats: "Statistics",
     routine: "Routine",
     last7days: "Last 7 days",
@@ -27,6 +27,7 @@ const messages = {
     blueThreashold: "Threashold orange → blue (minutes)",
   },
   fr: {
+    home: "Accueil",
     stats: "Statistiques",
     routine: "Routine",
     last7days: "7 derniers jours",
