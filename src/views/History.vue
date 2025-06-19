@@ -1,6 +1,6 @@
 <template>
   <div class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen pb-28">
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Historique</h2>
+    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">{{ $t("history") }}</h2>
 
     <ul class="space-y-4">
       <li
@@ -17,14 +17,14 @@
               {{ entry.date }}
             </div>
             <div class="text-sm text-neutral-700">
-              Cigarettes : <strong>{{ entry.count }}</strong>
+              {{ $t("cigarette") }} : <strong>{{ entry.count }}</strong>
             </div>
             <div class="text-sm text-neutral-700">
               Nicotine :
               <strong>{{ (entry.count * nicotinePerCig).toFixed(1) }} mg</strong>
             </div>
             <div class="text-sm text-neutral-700">
-              Coût : <strong>{{ (entry.count * pricePerCig).toFixed(2) }} €</strong>
+              {{ $t("cost") }} : <strong>{{ (entry.count * pricePerCig).toFixed(2) }} €</strong>
             </div>
           </div>
           <div class="text-sm text-neutral-500">
@@ -73,7 +73,7 @@
             @click="addSmoke(entry.date)"
             class="text-sm text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md transition"
           >
-            + Ajouter une cigarette
+            + {{ $t("addCigarette") }}
           </button>
         </div>
       </li>

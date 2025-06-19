@@ -5,11 +5,11 @@
     <div
       class="w-full max-w-sm bg-white rounded-xl border border-neutral-200 p-6 text-center"
     >
-      <h1 class="text-3xl font-semibold text-neutral-900 mb-1">
-        {{ count }} cigarette<span v-if="count > 1">s</span>
+      <h1 class="text-3xl font-semibold text-neutral-900 mb-1 lowercase">
+        {{ count }} {{ $t("cigarette") }}<span v-if="count > 1">s</span>
       </h1>
       <p class="text-sm text-neutral-500 mb-6">
-        Dernière :
+        {{ $t("lastCigarette") }} :
         <span v-if="timeSinceLast !== null">{{ timeSinceLast }} min</span>
         <span v-else>—</span>
       </p>
@@ -18,7 +18,7 @@
         @click="addCigarette"
         class="w-full py-3 text-base font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
       >
-        Ajouter une cigarette
+        {{ $t("addCigarette") }}
       </button>
     </div>
   </div>

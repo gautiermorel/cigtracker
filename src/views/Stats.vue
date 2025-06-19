@@ -2,17 +2,19 @@
   <div
     class="px-4 py-6 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
   >
-    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">Statistics</h2>
+    <h2 class="text-2xl font-semibold text-neutral-900 mb-6">
+      {{ $t("stats") }}
+    </h2>
 
     <!-- Graph #2 -->
     <div class="bg-white rounded-lg shadow pr-[1rem]">
-      <h3 class="p-4 text-lg font-medium mb-4">Routine</h3>
+      <h3 class="p-4 text-lg font-medium mb-4">{{ $t("routine") }}</h3>
       <canvas ref="routineChartRef" height="280"></canvas>
     </div>
 
     <!-- Graph #1 -->
     <div class="bg-white rounded-lg shadow p-4">
-      <h3 class="text-lg font-medium mb-4">7 derniers jours</h3>
+      <h3 class="text-lg font-medium mb-4">{{ $t("last7days") }}</h3>
       <canvas ref="barChartRef"></canvas>
     </div>
   </div>
@@ -34,6 +36,7 @@ import "chartjs-adapter-date-fns";
 
 const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
 const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
+const language = ref(localStorage.getItem("language") || "fr");
 
 Chart.register(
   CategoryScale,
@@ -79,7 +82,7 @@ onMounted(() => {
   for (let i = 0; i < 7; i++) {
     const d = new Date(barStart);
     d.setDate(d.getDate() + i);
-    const label = d.toLocaleDateString("fr-FR", {
+    const label = d.toLocaleDateString(language === 'fr' ? "fr-FR": "en-EN", {
       weekday: "short",
       day: "2-digit",
     });
@@ -128,7 +131,7 @@ onMounted(() => {
 
   // --- Graph #2 (hourly routine matrix 4am–4am) ---
   const formatLabel = (d) =>
-    d.toLocaleDateString("fr-FR", {
+    d.toLocaleDateString(language === 'fr' ? "fr-FR": "en-EN", {
       weekday: "short",
       // day: "2-digit",
       // month: "2-digit",
