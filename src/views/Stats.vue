@@ -1,7 +1,7 @@
 <template>
   <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
     <!-- Graph #2 -->
-    <div class="bg-white rounded-lg shadow pr-[1rem]">
+    <div class="bg-white rounded-lg shadow pl-[0.5rem] pr-[1rem]">
       <h3 class="p-4 text-lg font-medium mb-4">{{ $t("routine") }}</h3>
       <canvas ref="routineChartRef" height="280"></canvas>
     </div>

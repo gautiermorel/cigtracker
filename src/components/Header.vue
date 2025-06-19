@@ -1,6 +1,6 @@
 <template>
   <header
-    class="fixed top-0 left-0 w-full flex items-center bg-neutral-100 justify-between px-6 py-6"
+    class="fixed top-0 left-0 w-full flex items-center bg-neutral-100/80 justify-between px-6 py-6"
   >
     <h2 class="text-2xl font-semibold text-neutral-900">{{ pageTitle }}</h2>
 
