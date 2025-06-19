@@ -57,7 +57,7 @@ const cigaretteIndexPlugin = {
       const { x, y, width, height } = rect.getProps(["x", "y", "width", "height"], true);
       const centerX = x + width / 2;
       const centerY = y + height / 2;
-      const radius = Math.min(width, height) / 2 - 1 + 0.5;
+      const radius = Math.min(width, height) / 2 - 1;
       const label = `${dataPoint.__cigaretteIndex}`;
 
       ctx.save();
@@ -74,7 +74,7 @@ const cigaretteIndexPlugin = {
 
       ctx.shadowColor = "transparent";
       ctx.fillStyle = "black";
-      ctx.font = "bold 6px sans-serif";
+      ctx.font = "5px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(label, centerX, centerY);
@@ -235,7 +235,7 @@ onMounted(() => {
           data: routineData,
           backgroundColor: (ctx) => ctx.raw.color,
           width: ({ chart }) => (chart.chartArea?.width || 0) / 7 - 3,
-          height: 10,
+          height: 8,
         },
       ],
     },
