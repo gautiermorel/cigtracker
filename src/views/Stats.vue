@@ -1,12 +1,10 @@
 <template>
   <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
-    <!-- Graph #2 -->
     <div class="bg-white rounded-lg shadow pl-[0.5rem] pr-[1rem]">
       <h3 class="p-4 text-lg font-medium mb-4">{{ $t("routine") }}</h3>
-      <canvas ref="routineChartRef" height="280"></canvas>
+      <canvas ref="routineChartRef" height="400"></canvas>
     </div>
 
-    <!-- Graph #1 -->
     <div class="bg-white rounded-lg shadow p-4">
       <h3 class="text-lg font-medium mb-4">{{ $t("last7days") }}</h3>
       <canvas ref="barChartRef"></canvas>
@@ -28,9 +26,62 @@ import {
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
 import "chartjs-adapter-date-fns";
 
-const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
-const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
-const language = ref(localStorage.getItem("language") || "fr");
+// Utility to align to 4am-based day (returns 'YYYY-MM-DD')
+function getAdjustedDateKey(date) {
+  const adjusted = new Date(date);
+  if (adjusted.getHours() < 4) adjusted.setDate(adjusted.getDate() - 1);
+  adjusted.setHours(4, 0, 0, 0);
+  return adjusted.toISOString().slice(0, 10);
+}
+
+// Plugin to draw index in each matrix cell
+const cigaretteIndexPlugin = {
+  id: "cigaretteIndexPlugin",
+  afterDatasetsDraw(chart) {
+    const dataset = chart.data.datasets[0];
+    if (!dataset || dataset.customType !== "cigarette-matrix") return;
+
+    const meta = chart.getDatasetMeta(0);
+    const ctx = chart.ctx;
+
+    dataset.data.forEach((dataPoint, index) => {
+      if (
+        dataPoint.__cigaretteIndex === undefined ||
+        dataPoint.__dailyCount === undefined
+      )
+        return;
+
+      const rect = meta.data[index];
+      if (!rect) return;
+
+      const { x, y, width, height } = rect.getProps(["x", "y", "width", "height"], true);
+      const centerX = x + width / 2;
+      const centerY = y + height / 2;
+      const radius = Math.min(width, height) / 2 - 1 + 0.5;
+      const label = `${dataPoint.__cigaretteIndex}`;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      ctx.fillStyle = "white";
+      ctx.shadowColor = "rgba(0,0,0,0.15)";
+      ctx.shadowBlur = 2;
+      ctx.fill();
+      ctx.lineWidth = 1;
+      ctx.strokeStyle = "#fff";
+      ctx.stroke();
+      ctx.closePath();
+
+      ctx.shadowColor = "transparent";
+      ctx.fillStyle = "black";
+      ctx.font = "bold 6px sans-serif";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+      ctx.fillText(label, centerX, centerY);
+      ctx.restore();
+    });
+  },
+};
 
 Chart.register(
   CategoryScale,
@@ -40,61 +91,60 @@ Chart.register(
   BarElement,
   BarController,
   MatrixController,
-  MatrixElement
+  MatrixElement,
+  cigaretteIndexPlugin
 );
 
 const STORAGE_KEY = "smokeEvents";
+const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
+const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
+const language = ref(localStorage.getItem("language") || "fr");
+
 const barChartRef = ref(null);
 const routineChartRef = ref(null);
 
 onMounted(() => {
   const raw = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
-
   const now = new Date();
 
-  const routineStart = new Date();
-  routineStart.setDate(now.getDate() - 6);
-  routineStart.setHours(4, 0, 0, 0);
-
-  const routineEnd = new Date();
-  routineEnd.setDate(now.getDate() + 1);
-  routineEnd.setHours(4, 0, 0, 0);
-
-  const filteredDates = raw
-    .map((ts) => new Date(ts))
-    .filter((d) => d >= routineStart && d < routineEnd)
-    .sort((a, b) => a - b);
-
-  // --- Graph #1 (daily counts with 4am-to-4am days) ---
-  const barStart = new Date();
-  barStart.setDate(now.getDate() - 6);
-  barStart.setHours(4, 0, 0, 0);
+  // ---- Bar Chart aligned to todayKey - 6 days @ 4am ----
+  const todayKey = getAdjustedDateKey(now); // "YYYY-MM-DD"
+  const today4h = new Date(todayKey); // Date at today 4:00
+  const barStart = new Date(today4h);
+  barStart.setDate(barStart.getDate() - 6); // Go 6 days back from today @ 4h
 
   const barLabels = [];
   const barCounts = [];
 
   for (let i = 0; i < 7; i++) {
     const d = new Date(barStart);
-    d.setDate(d.getDate() + i);
-    const label = d.toLocaleDateString(language === "fr" ? "fr-FR" : "en-EN", {
-      weekday: "short",
-      day: "2-digit",
-    });
+    d.setDate(barStart.getDate() + i);
+    const label = d.toLocaleDateString(
+      language.value === "fr" ? "fr-FR" : "en-EN",
+      { weekday: "short", day: "2-digit" }
+    );
     barLabels.push(label);
     barCounts.push(0);
   }
 
-  filteredDates.forEach((d) => {
-    const hours = d.getHours() + d.getMinutes() / 60;
-    const adjusted = new Date(d);
-    if (hours < 4) {
-      adjusted.setDate(adjusted.getDate() - 1);
-    }
+  const routineStart = new Date(barStart); // same start for matrix
+  const routineEnd = new Date(today4h);
+  routineEnd.setDate(routineEnd.getDate() + 1); // tomorrow @ 4h
 
+  const filteredDates = raw
+    .map((ts) => new Date(ts))
+    .filter((d) => d >= routineStart && d < routineEnd)
+    .sort((a, b) => a - b);
+
+  const countByDayKey = {};
+  filteredDates.forEach((d) => {
+    const key = getAdjustedDateKey(d);
+    const adjusted = new Date(key);
     const index = Math.floor((adjusted - barStart) / (1000 * 60 * 60 * 24));
     if (index >= 0 && index < 7) {
       barCounts[index]++;
     }
+    countByDayKey[key] = (countByDayKey[key] || 0) + 1;
   });
 
   new Chart(barChartRef.value, {
@@ -103,7 +153,7 @@ onMounted(() => {
       labels: barLabels,
       datasets: [
         {
-          label: "Cigarettes par jour",
+          label: "Cigarettes per day",
           data: barCounts,
           backgroundColor: "#f87171",
         },
@@ -123,12 +173,10 @@ onMounted(() => {
     },
   });
 
-  // --- Graph #2 (hourly routine matrix 4am–4am) ---
+  // ---- Routine Matrix ----
   const formatLabel = (d) =>
-    d.toLocaleDateString(language === "fr" ? "fr-FR" : "en-EN", {
+    d.toLocaleDateString(language.value === "fr" ? "fr-FR" : "en-EN", {
       weekday: "short",
-      // day: "2-digit",
-      // month: "2-digit",
       timeZone: "Europe/Paris",
     });
 
@@ -141,20 +189,21 @@ onMounted(() => {
 
   const routineData = [];
   const lastByDay = {};
+  const counterByDayKey = {};
 
   filteredDates.forEach((eventDate) => {
+    const dayKey = getAdjustedDateKey(eventDate);
+    const adjustedDate = new Date(dayKey);
+
     const hour = eventDate.getHours();
     const minutes = eventDate.getMinutes();
     let y = hour + minutes / 60;
-
-    const adjustedDate = new Date(eventDate);
-    if (y < 4) {
-      adjustedDate.setDate(adjustedDate.getDate() - 1);
-      y += 24;
-    }
+    if (y < 4) y += 24;
 
     const label = formatLabel(adjustedDate);
     const timestamp = eventDate.getTime();
+    const count = countByDayKey[dayKey] || 0;
+    counterByDayKey[dayKey] = (counterByDayKey[dayKey] || 0) + 1;
 
     let color = "#3b82f6";
     if (lastByDay[label]) {
@@ -170,6 +219,8 @@ onMounted(() => {
       v: 1,
       color,
       __sourceDate: eventDate,
+      __dailyCount: count,
+      __cigaretteIndex: counterByDayKey[dayKey],
     });
   });
 
@@ -179,34 +230,34 @@ onMounted(() => {
       datasets: [
         {
           label: "Cigarettes",
+          type: "matrix",
+          customType: "cigarette-matrix",
           data: routineData,
           backgroundColor: (ctx) => ctx.raw.color,
           width: ({ chart }) => (chart.chartArea?.width || 0) / 7 - 3,
-          height: 4,
+          height: 10,
         },
       ],
     },
     options: {
       responsive: true,
       plugins: {
+        cigaretteIndexPlugin: {},
         tooltip: {
           callbacks: {
             title: (ctx) =>
-              new Date(ctx[0].raw.__sourceDate).toLocaleString("fr-FR", {
-                weekday: "long",
-                day: "2-digit",
-                month: "short",
-                hour: "2-digit",
-                minute: "2-digit",
-                timeZone: "Europe/Paris",
-              }),
-            label: (ctx) => {
-              const hour = Math.floor(ctx.raw.y % 24);
-              const minute = Math.round((ctx.raw.y % 1) * 60);
-              return `${hour.toString().padStart(2, "0")}h${minute
-                .toString()
-                .padStart(2, "0")} – 1 cigarette`;
-            },
+              new Date(ctx[0].raw.__sourceDate).toLocaleString(
+                language.value === "fr" ? "fr-FR" : "en-EN",
+                {
+                  weekday: "long",
+                  day: "2-digit",
+                  month: "short",
+                  hour: "2-digit",
+                  minute: "2-digit",
+                  timeZone: "Europe/Paris",
+                }
+              ),
+            label: () => null,
           },
         },
         legend: { display: false },
