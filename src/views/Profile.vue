@@ -1,8 +1,9 @@
 <template>
   <div
-    class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
+    class="pt-24 max-w-xl mx-auto min-h-screen space-y-8 pb-28 transition-colors"
   >
     <section class="bg-white p-4 rounded-lg shadow mt-6 space-y-4">
+      <!-- User name input -->
       <div>
         <label class="block text-sm font-medium text-neutral-700 mb-2">
           {{ $t("name") }}
@@ -13,6 +14,7 @@
         />
       </div>
 
+      <!-- Language selection -->
       <div>
         <label class="block text-sm font-medium text-neutral-700 mb-2">
           {{ $t("language") }}
@@ -26,13 +28,28 @@
         </select>
       </div>
 
+      <!-- Theme color picker -->
+      <div>
+        <label class="block text-sm font-medium text-neutral-700 mb-2">
+          {{ $t("themeColor") }}
+        </label>
+        <input
+          v-model="themeColor"
+          type="color"
+          class="w-12 h-10 p-0 border border-neutral-300 rounded-md"
+        />
+      </div>
+
+      <!-- Save button -->
       <button
         @click="save"
+        :style="{ backgroundColor: themeColor }"
         class="w-full mt-4 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition"
       >
         {{ $t("save") }}
       </button>
 
+      <!-- Saved confirmation -->
       <transition name="fade">
         <p v-if="saved" class="text-sm text-green-600 mt-3">
           {{ $t("saved") }}
@@ -43,17 +60,25 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
-const saved = ref(false);
 
 const { locale } = useI18n();
+
+const saved = ref(false);
 const userName = ref(localStorage.getItem("userName") || "John Doe");
 const language = ref(localStorage.getItem("language") || "fr");
+const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444"); // default red
+
+// Keep locale in sync
+watch(language, (newLang) => {
+  locale.value = newLang;
+});
 
 const save = () => {
   localStorage.setItem("userName", userName.value);
   localStorage.setItem("language", language.value);
+  localStorage.setItem("themeColor", themeColor.value);
   locale.value = language.value;
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);

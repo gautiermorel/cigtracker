@@ -26,6 +26,7 @@ const messages = {
     objectivePerDay: "Objective per day",
     orangeThreashold: "Threashold red → orange (minutes)",
     blueThreashold: "Threashold orange → blue (minutes)",
+    themeColor: "Theme color"
   },
   fr: {
     home: "Accueil",
@@ -52,6 +53,7 @@ const messages = {
     objectivePerDay: "Objectif par jour",
     orangeThreashold: "Seuil rouge → orange (minutes)",
     blueThreashold: "Seuil orange → bleu (minutes)",
+    themeColor: "Couleur du thème"
   },
 };
 

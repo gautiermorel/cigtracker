@@ -6,6 +6,7 @@
 
     <router-link to="/profile">
       <div
+        :style="{ backgroundColor: themeColor }"
         class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-sm"
       >
         {{ initials }}
@@ -21,12 +22,14 @@ import { computed } from "vue";
 
 const route = useRoute();
 const { t } = useI18n();
+
 const userName = localStorage.getItem("userName") || "John Doe";
+const themeColor = localStorage.getItem("themeColor") || "#ef4444";
 
 const initials = computed(() =>
   userName
     .split(" ")
-    .map((s) => `${s[0]}`)
+    .map((s) => s[0])
     .join("")
     .toUpperCase()
 );

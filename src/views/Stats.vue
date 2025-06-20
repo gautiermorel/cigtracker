@@ -1,5 +1,7 @@
 <template>
-  <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
+  <div
+    class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
+  >
     <div class="bg-white rounded-lg shadow pl-[0.5rem] pr-[1rem]">
       <h3 class="p-4 text-lg font-medium mb-4">{{ $t("routine") }}</h3>
       <canvas ref="routineChartRef" height="400"></canvas>
@@ -54,7 +56,10 @@ const cigaretteIndexPlugin = {
       const rect = meta.data[index];
       if (!rect) return;
 
-      const { x, y, width, height } = rect.getProps(["x", "y", "width", "height"], true);
+      const { x, y, width, height } = rect.getProps(
+        ["x", "y", "width", "height"],
+        true
+      );
       const centerX = x + width / 2;
       const centerY = y + height / 2;
       const radius = Math.min(width, height) / 2 - 1;
@@ -99,6 +104,7 @@ const STORAGE_KEY = "smokeEvents";
 const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
 const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
 const language = ref(localStorage.getItem("language") || "fr");
+const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444"); // default red
 
 const barChartRef = ref(null);
 const routineChartRef = ref(null);
@@ -155,7 +161,7 @@ onMounted(() => {
         {
           label: "Cigarettes per day",
           data: barCounts,
-          backgroundColor: "#f87171",
+          backgroundColor: themeColor.value,
         },
       ],
     },

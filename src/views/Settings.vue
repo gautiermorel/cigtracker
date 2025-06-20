@@ -78,6 +78,7 @@
 
       <button
         @click="save"
+        :style="{ backgroundColor: themeColor }"
         class="w-full mt-4 text-white bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded-md font-medium transition"
       >
         {{ $t("save") }}
@@ -100,6 +101,7 @@
       >
         <button
           @click="exportData"
+          :style="{ backgroundColor: themeColor }"
           class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition"
         >
           {{ $t("export") }}
@@ -135,7 +137,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { useI18n } from "vue-i18n";
 import { exportData, importDataFromFile } from "../components/ExportImport.js";
 
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 4);
@@ -143,6 +144,7 @@ const price = ref(parseFloat(localStorage.getItem("pricePerCig")) || 0.5);
 const dailyGoal = ref(parseInt(localStorage.getItem("dailyGoal")) || 10);
 const threshold1 = ref(parseInt(localStorage.getItem("threshold1")) || 30);
 const threshold2 = ref(parseInt(localStorage.getItem("threshold2")) || 60);
+const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444"); // default red
 
 const saved = ref(false);
 const importSuccess = ref(false);

@@ -16,6 +16,7 @@
 
       <button
         @click="addCigarette"
+        :style="{ backgroundColor: themeColor }"
         class="w-full py-3 text-base font-medium rounded-lg text-white bg-red-500 hover:bg-red-600 transition-colors"
       >
         {{ $t("addCigarette") }}
@@ -26,6 +27,8 @@
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+
+const themeColor = localStorage.getItem("themeColor") || "#ef4444";
 
 const STORAGE_KEY = "smokeEvents";
 const events = ref([]);
@@ -66,8 +69,6 @@ const filteredEvents = computed(() => {
 });
 
 const count = computed(() => filteredEvents.value.length);
-const dailyCost = computed(() => (count.value * pricePerCig).toFixed(2));
-
 const timeSinceLast = ref(null);
 
 const updateTimeSinceLast = () => {
