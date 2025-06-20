@@ -101,10 +101,15 @@ Chart.register(
 );
 
 const STORAGE_KEY = "smokeEvents";
-const threshold1 = parseInt(localStorage.getItem("threshold1")) || 30;
-const threshold2 = parseInt(localStorage.getItem("threshold2")) || 60;
+
+const shortIntervalThreashold = parseInt(localStorage.getItem("shortIntervalThreashold")) || 30;
+const mediumIntervalThreashold = parseInt(localStorage.getItem("mediumIntervalThreashold")) || 60;
+
 const language = ref(localStorage.getItem("language") || "fr");
-const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444"); // default red
+const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444");
+const colorShortIntervalThreashold = ref(localStorage.getItem("colorShortIntervalThreashold") || "#ef4444");
+const colorMediumIntervalThreashold = ref(localStorage.getItem("colorMediumIntervalThreashold") || "#f97316");
+const colorLongIntervalThreashold = ref(localStorage.getItem("colorLongIntervalThreashold") || "#3b82f6");
 
 const barChartRef = ref(null);
 const routineChartRef = ref(null);
@@ -211,11 +216,11 @@ onMounted(() => {
     const count = countByDayKey[dayKey] || 0;
     counterByDayKey[dayKey] = (counterByDayKey[dayKey] || 0) + 1;
 
-    let color = "#3b82f6";
+    let color = colorLongIntervalThreashold.value;
     if (lastByDay[label]) {
       const diff = (timestamp - lastByDay[label]) / 60000;
-      if (diff < threshold1) color = "#ef4444";
-      else if (diff < threshold2) color = "#f97316";
+      if (diff < shortIntervalThreashold) color = colorShortIntervalThreashold.value;
+      else if (diff < mediumIntervalThreashold) color = colorMediumIntervalThreashold.value;
     }
     lastByDay[label] = timestamp;
 

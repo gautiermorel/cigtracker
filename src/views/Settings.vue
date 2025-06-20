@@ -49,32 +49,67 @@
 
       <!-- Color thresholds -->
       <label
-        for="threshold1"
+        for="shortIntervalThreashold"
         class="block text-sm font-medium text-neutral-700 mt-4 mb-2"
       >
-        {{ $t("orangeThreashold") }}
+        {{ $t("shortIntervalThreashold") }}
       </label>
-      <input
-        id="threshold1"
-        type="number"
-        min="1"
-        v-model="threshold1"
-        class="w-full px-3 py-2 border border-neutral-300 rounded-md"
-      />
+      <div class="flex">
+        <input
+          id="shortIntervalThreashold"
+          type="number"
+          min="1"
+          v-model="shortIntervalThreashold"
+          class="w-full px-3 py-2 border border-neutral-300 rounded-md mr-2"
+        />
+        <input
+          v-model="colorShortIntervalThreashold"
+          type="color"
+          class="w-12 h-10 p-0 border border-neutral-300 rounded-md"
+        />
+      </div>
 
       <label
-        for="threshold2"
+        for="mediumIntervalThreashold"
         class="block text-sm font-medium text-neutral-700 mt-4 mb-2"
       >
-        {{ $t("blueThreashold") }}
+        {{ $t("mediumIntervalThreashold") }}
       </label>
-      <input
-        id="threshold2"
-        type="number"
-        min="1"
-        v-model="threshold2"
-        class="w-full px-3 py-2 border border-neutral-300 rounded-md"
-      />
+      <div class="flex">
+        <input
+          id="mediumIntervalThreashold"
+          type="number"
+          :min="shortIntervalThreashold"
+          v-model="mediumIntervalThreashold"
+          class="w-full px-3 py-2 border border-neutral-300 rounded-md mr-2"
+        />
+        <input
+          v-model="colorMediumIntervalThreashold"
+          type="color"
+          class="w-12 h-10 p-0 border border-neutral-300 rounded-md"
+        />
+      </div>
+      <label
+        for="longIntervalThreashold"
+        class="block text-sm font-medium text-neutral-700 mt-4 mb-2"
+      >
+        {{ $t("longIntervalThreashold") }}
+      </label>
+
+      <div class="flex">
+        <input
+          id="longIntervalThreashold"
+          type="number"
+          disabled
+          :value="mediumIntervalThreashold + 1"
+          class="w-full px-3 py-2 border border-neutral-300 rounded-md mr-2"
+        />
+        <input
+          v-model="colorLongIntervalThreashold"
+          type="color"
+          class="w-12 h-10 p-0 border border-neutral-300 rounded-md"
+        />
+      </div>
 
       <button
         @click="save"
@@ -142,9 +177,23 @@ import { exportData, importDataFromFile } from "../components/ExportImport.js";
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 4);
 const price = ref(parseFloat(localStorage.getItem("pricePerCig")) || 0.5);
 const dailyGoal = ref(parseInt(localStorage.getItem("dailyGoal")) || 10);
-const threshold1 = ref(parseInt(localStorage.getItem("threshold1")) || 30);
-const threshold2 = ref(parseInt(localStorage.getItem("threshold2")) || 60);
-const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444"); // default red
+const shortIntervalThreashold = ref(
+  parseInt(localStorage.getItem("shortIntervalThreashold")) || 30
+);
+const mediumIntervalThreashold = ref(
+  parseInt(localStorage.getItem("mediumIntervalThreashold")) || 60
+);
+const themeColor = ref(localStorage.getItem("themeColor") || "#ef4444");
+
+const colorShortIntervalThreashold = ref(
+  localStorage.getItem("colorShortIntervalThreashold") || "#ef4444"
+);
+const colorMediumIntervalThreashold = ref(
+  localStorage.getItem("colorMediumIntervalThreashold") || "#f97316"
+);
+const colorLongIntervalThreashold = ref(
+  localStorage.getItem("colorLongIntervalThreashold") || "#3b82f6"
+);
 
 const saved = ref(false);
 const importSuccess = ref(false);
@@ -155,8 +204,11 @@ const save = () => {
   localStorage.setItem("nicotinePerCig", nicotine.value);
   localStorage.setItem("pricePerCig", price.value);
   localStorage.setItem("dailyGoal", dailyGoal.value);
-  localStorage.setItem("threshold1", threshold1.value);
-  localStorage.setItem("threshold2", threshold2.value);
+  localStorage.setItem("shortIntervalThreashold", shortIntervalThreashold.value);
+  localStorage.setItem("mediumIntervalThreashold", mediumIntervalThreashold.value);
+  localStorage.setItem("colorShortIntervalThreashold", colorShortIntervalThreashold.value);
+  localStorage.setItem("colorMediumIntervalThreashold", colorMediumIntervalThreashold.value);
+  localStorage.setItem("colorLongIntervalThreashold", colorLongIntervalThreashold.value);
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);
 };
