@@ -126,58 +126,6 @@
       </transition>
     </section>
 
-    <!-- Export / Import -->
-    <section class="bg-white p-4 rounded-lg shadow">
-      <h3 class="font-semibold text-lg text-neutral-800 mb-4">
-        {{ $t("export") }} / {{ $t("import") }}
-      </h3>
-
-      <div
-        class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0"
-      >
-        <!-- Export Button -->
-        <button
-          @click="exportData"
-          class="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md font-medium transition hover:opacity-90"
-        >
-          <Upload class="w-5 h-5" />
-          {{ $t("export") }}
-        </button>
-
-        <!-- Import Button -->
-        <div
-          class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0"
-        >
-          <button
-            @click="triggerFileInput"
-            class="flex justify-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-50 items-center gap-2 text-white px-4 py-2 rounded-md font-medium transition hover:opacity-90"
-          >
-            <Download class="w-5 h-5" />
-            {{ $t("import") }}
-          </button>
-          <input
-            ref="fileInputRef"
-            type="file"
-            accept="application/json"
-            @change="handleImport"
-            class="hidden"
-          />
-        </div>
-      </div>
-
-      <!-- Feedback messages -->
-      <transition name="fade">
-        <p v-if="importSuccess" class="text-sm text-green-600 mt-3">
-          {{ $t("importSuccess") }}
-        </p>
-      </transition>
-      <transition name="fade">
-        <p v-if="importError" class="text-sm text-red-600 mt-3">
-          {{ $t("error") }} : {{ importError }}
-        </p>
-      </transition>
-    </section>
-
     <div class="text-sm text-neutral-500 mt-6">
       {{ $t("appVersion") }} : <strong>{{ version }}</strong>
     </div>
@@ -186,8 +134,6 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
-import { Upload, Download } from "lucide-vue-next";
-import { exportData, importDataFromFile } from "../components/ExportImport.js";
 
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 4);
 const price = ref(parseFloat(localStorage.getItem("pricePerCig")) || 0.5);
@@ -211,14 +157,7 @@ const colorLongIntervalThreashold = ref(
 );
 
 const saved = ref(false);
-const importSuccess = ref(false);
-const importError = ref("");
 const version = ref("");
-const fileInputRef = ref(null);
-
-function triggerFileInput() {
-  fileInputRef.value?.click();
-}
 
 const save = () => {
   localStorage.setItem("nicotinePerCig", nicotine.value);
@@ -246,21 +185,6 @@ const save = () => {
   );
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);
-};
-
-const handleImport = async (e) => {
-  const file = e.target.files[0];
-  try {
-    await importDataFromFile(file);
-    importSuccess.value = true;
-    setTimeout(() => {
-      importSuccess.value = false;
-      location.reload();
-    }, 1000);
-  } catch (err) {
-    importError.value = err.message || "Erreur inconnue.";
-    setTimeout(() => (importError.value = ""), 3000);
-  }
 };
 
 onMounted(async () => {
