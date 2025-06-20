@@ -1,28 +1,8 @@
 <template>
-  <div class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28">
+  <div
+    class="pt-24 max-w-xl mx-auto bg-neutral-100 min-h-screen space-y-8 pb-28"
+  >
     <section class="bg-white p-4 rounded-lg shadow mt-6 space-y-4">
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 mb-2">
-          {{ $t("name") }}
-        </label>
-        <input
-          v-model="userName"
-          class="w-full px-3 py-2 border border-neutral-300 rounded-md"
-        />
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium text-neutral-700 mb-2">
-          {{ $t("language") }}
-        </label>
-        <select
-          v-model="language"
-          class="w-full px-3 py-2 border border-neutral-300 rounded-md"
-        >
-          <option value="fr">Français</option>
-          <option value="en">English</option>
-        </select>
-      </div>
       <label
         for="nicotine"
         class="block text-sm font-medium text-neutral-700 mb-2"
@@ -169,19 +149,12 @@ const importSuccess = ref(false);
 const importError = ref("");
 const version = ref("");
 
-const { locale } = useI18n();
-const userName = ref(localStorage.getItem("userName") || "John Doe");
-const language = ref(localStorage.getItem("language") || "fr");
-
 const save = () => {
   localStorage.setItem("nicotinePerCig", nicotine.value);
   localStorage.setItem("pricePerCig", price.value);
   localStorage.setItem("dailyGoal", dailyGoal.value);
   localStorage.setItem("threshold1", threshold1.value);
   localStorage.setItem("threshold2", threshold2.value);
-  localStorage.setItem("userName", userName.value);
-  localStorage.setItem("language", language.value);
-  locale.value = language.value;
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);
 };

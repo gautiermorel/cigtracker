@@ -62,19 +62,19 @@ const cigaretteIndexPlugin = {
 
       ctx.save();
       ctx.beginPath();
-      ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
-      ctx.fillStyle = "white";
-      ctx.shadowColor = "rgba(0,0,0,0.15)";
-      ctx.shadowBlur = 2;
-      ctx.fill();
-      ctx.lineWidth = 1;
-      ctx.strokeStyle = "#fff";
-      ctx.stroke();
-      ctx.closePath();
+      // ctx.arc(centerX, centerY, radius, 0, 2 * Math.PI);
+      // ctx.fillStyle = "white";
+      // ctx.shadowColor = "rgba(0,0,0,0.15)";
+      // ctx.shadowBlur = 2;
+      // ctx.fill();
+      // ctx.lineWidth = 1;
+      // ctx.strokeStyle = "#fff";
+      // ctx.stroke();
+      // ctx.closePath();
 
       ctx.shadowColor = "transparent";
-      ctx.fillStyle = "black";
-      ctx.font = "5px sans-serif";
+      ctx.fillStyle = "white";
+      ctx.font = "bold 5px sans-serif";
       ctx.textAlign = "center";
       ctx.textBaseline = "middle";
       ctx.fillText(label, centerX, centerY);
@@ -235,7 +235,7 @@ onMounted(() => {
           data: routineData,
           backgroundColor: (ctx) => ctx.raw.color,
           width: ({ chart }) => (chart.chartArea?.width || 0) / 7 - 3,
-          height: 8,
+          height: 7,
         },
       ],
     },

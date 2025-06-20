@@ -4,7 +4,7 @@
   >
     <h2 class="text-2xl font-semibold text-neutral-900">{{ pageTitle }}</h2>
 
-    <router-link to="/settings">
+    <router-link to="/profile">
       <div
         class="w-12 h-12 rounded-full bg-red-500 text-white flex items-center justify-center font-bold text-sm"
       >
