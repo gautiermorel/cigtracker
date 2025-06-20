@@ -252,6 +252,7 @@ onMounted(() => {
     },
     options: {
       responsive: true,
+      animation: false,
       plugins: {
         cigaretteIndexPlugin: {},
         tooltip: {
