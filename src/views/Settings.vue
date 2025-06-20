@@ -131,27 +131,41 @@
       <h3 class="font-semibold text-lg text-neutral-800 mb-4">
         {{ $t("export") }} / {{ $t("import") }}
       </h3>
+
       <div
         class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0"
       >
+        <!-- Export Button -->
         <button
           @click="exportData"
-          :style="{ backgroundColor: themeColor }"
-          class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md font-medium transition"
+          class="flex items-center justify-center gap-2 bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded-md font-medium transition hover:opacity-90"
         >
+          <Upload class="w-5 h-5" />
           {{ $t("export") }}
         </button>
-        <label class="cursor-pointer text-sm text-blue-700 underline">
-          {{ $t("import") }}
+
+        <!-- Import Button -->
+        <div
+          class="flex flex-col sm:flex-row sm:items-center sm:space-x-4 space-y-2 sm:space-y-0"
+        >
+          <button
+            @click="triggerFileInput"
+            class="flex justify-center gap-2 border border-blue-600 text-blue-600 hover:bg-blue-50 items-center gap-2 text-white px-4 py-2 rounded-md font-medium transition hover:opacity-90"
+          >
+            <Download class="w-5 h-5" />
+            {{ $t("import") }}
+          </button>
           <input
+            ref="fileInputRef"
             type="file"
             accept="application/json"
             @change="handleImport"
             class="hidden"
           />
-        </label>
+        </div>
       </div>
 
+      <!-- Feedback messages -->
       <transition name="fade">
         <p v-if="importSuccess" class="text-sm text-green-600 mt-3">
           {{ $t("importSuccess") }}
@@ -172,6 +186,7 @@
 
 <script setup>
 import { ref, onMounted } from "vue";
+import { Upload, Download } from "lucide-vue-next";
 import { exportData, importDataFromFile } from "../components/ExportImport.js";
 
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 4);
@@ -199,16 +214,36 @@ const saved = ref(false);
 const importSuccess = ref(false);
 const importError = ref("");
 const version = ref("");
+const fileInputRef = ref(null);
+
+function triggerFileInput() {
+  fileInputRef.value?.click();
+}
 
 const save = () => {
   localStorage.setItem("nicotinePerCig", nicotine.value);
   localStorage.setItem("pricePerCig", price.value);
   localStorage.setItem("dailyGoal", dailyGoal.value);
-  localStorage.setItem("shortIntervalThreashold", shortIntervalThreashold.value);
-  localStorage.setItem("mediumIntervalThreashold", mediumIntervalThreashold.value);
-  localStorage.setItem("colorShortIntervalThreashold", colorShortIntervalThreashold.value);
-  localStorage.setItem("colorMediumIntervalThreashold", colorMediumIntervalThreashold.value);
-  localStorage.setItem("colorLongIntervalThreashold", colorLongIntervalThreashold.value);
+  localStorage.setItem(
+    "shortIntervalThreashold",
+    shortIntervalThreashold.value
+  );
+  localStorage.setItem(
+    "mediumIntervalThreashold",
+    mediumIntervalThreashold.value
+  );
+  localStorage.setItem(
+    "colorShortIntervalThreashold",
+    colorShortIntervalThreashold.value
+  );
+  localStorage.setItem(
+    "colorMediumIntervalThreashold",
+    colorMediumIntervalThreashold.value
+  );
+  localStorage.setItem(
+    "colorLongIntervalThreashold",
+    colorLongIntervalThreashold.value
+  );
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);
 };
