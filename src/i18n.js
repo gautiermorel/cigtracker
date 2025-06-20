@@ -27,7 +27,9 @@ const messages = {
     shortIntervalThreashold: "Minimum duration threshold (in minutes)",
     mediumIntervalThreashold: "Medium duration threshold (in minutes)",
     longIntervalThreashold: "Any duration above this will be considered long",
-    themeColor: "Theme color"
+    themeColor: "Theme color",
+    newVersionAvailable: "New version available",
+    refresh: "Refresh",
   },
   fr: {
     home: "Accueil",
@@ -55,7 +57,9 @@ const messages = {
     shortIntervalThreashold: "Seuil de durée minimum (en minutes)",
     mediumIntervalThreashold: "Seuil de durée intermédiaire (en minutes)",
     longIntervalThreashold: "Toute durée au-delà de ce seuil sera considérée comme longue",
-    themeColor: "Couleur du thème"
+    themeColor: "Couleur du thème",
+    newVersionAvailable: "Nouvelle version disponible",
+    refresh: "Rafraîchir",
   },
 };
 

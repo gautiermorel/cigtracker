@@ -133,7 +133,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from "vue";
+import { ref } from "vue";
+import { useAppVersion } from "../composables/useAppVersion.js";
+const { version } = useAppVersion({ checkInterval: 0 });
 
 const nicotine = ref(parseFloat(localStorage.getItem("nicotinePerCig")) || 4);
 const price = ref(parseFloat(localStorage.getItem("pricePerCig")) || 0.5);
@@ -157,7 +159,6 @@ const colorLongIntervalThreashold = ref(
 );
 
 const saved = ref(false);
-const version = ref("");
 
 const save = () => {
   localStorage.setItem("nicotinePerCig", nicotine.value);
@@ -187,10 +188,6 @@ const save = () => {
   setTimeout(() => (saved.value = false), 2000);
 };
 
-onMounted(async () => {
-  const res = await fetch("/version.json");
-  if (res.ok) version.value = (await res.json()).version;
-});
 </script>
 
 <style scoped>
