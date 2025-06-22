@@ -30,6 +30,7 @@ const messages = {
     themeColor: "Theme color",
     newVersionAvailable: "New version available",
     refresh: "Refresh",
+    suggestedWaitTime: "Suggested wait time",
   },
   fr: {
     home: "Accueil",
@@ -60,6 +61,7 @@ const messages = {
     themeColor: "Couleur du thème",
     newVersionAvailable: "Nouvelle version disponible",
     refresh: "Rafraîchir",
+    suggestedWaitTime: "Délai recommandé"
   },
 };
 

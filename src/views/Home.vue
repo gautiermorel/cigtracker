@@ -8,9 +8,16 @@
       <h1 class="text-3xl font-semibold text-neutral-900 mb-1 lowercase">
         {{ count }} {{ $t("cigarette") }}<span v-if="count > 1">s</span>
       </h1>
-      <p class="text-sm text-neutral-500 mb-6">
+
+      <p class="text-sm text-neutral-500 mb-1">
         {{ $t("lastCigarette") }} :
         <span v-if="timeSinceLast !== null">{{ timeSinceLast }} min</span>
+        <span v-else>—</span>
+      </p>
+
+      <p class="text-sm text-neutral-500 mb-6">
+        {{ $t("suggestedWaitTime") }} :
+        <span v-if="nextCigEstimate !== null">{{ nextCigEstimate }} min</span>
         <span v-else>—</span>
       </p>
 
@@ -26,7 +33,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 
 const themeColor = localStorage.getItem("themeColor") || "#ef4444";
 
@@ -43,6 +50,7 @@ const addCigarette = () => {
   events.value.push(now);
   localStorage.setItem(STORAGE_KEY, JSON.stringify(events.value));
   updateTimeSinceLast();
+  estimateNextCigarette();
 };
 
 const getLocalDayBounds = () => {
@@ -81,10 +89,93 @@ const updateTimeSinceLast = () => {
   }
 };
 
+const nextCigEstimate = ref(null);
+
+// Estimation basée sur l’heure moyenne de la cigarette suivante
+const estimateNextCigarette = () => {
+  const allDates = events.value.map((ts) => new Date(ts));
+  if (allDates.length === 0) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  const now = new Date();
+  const todayKey = getAdjustedDateKey(now);
+  const grouped = {};
+
+  allDates.forEach((date) => {
+    const key = getAdjustedDateKey(date);
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(date);
+  });
+
+  // Trier les événements dans chaque jour
+  for (const day of Object.keys(grouped)) {
+    grouped[day].sort((a, b) => a - b);
+  }
+
+  const todayEvents = grouped[todayKey] || [];
+  const currentIndex = todayEvents.length;
+
+  if (currentIndex === 0) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  const lastCigDate = todayEvents[todayEvents.length - 1];
+  const lastTime = lastCigDate.getHours() + lastCigDate.getMinutes() / 60;
+
+  const nextCigTimes = [];
+
+  // Chercher l’heure moyenne de la cigarette suivante (même index)
+  for (const [key, events] of Object.entries(grouped)) {
+    if (key === todayKey) continue;
+    if (events.length > currentIndex) {
+      const d = events[currentIndex]; // prochaine cigarette dans ce jour-là
+      const t = d.getHours() + d.getMinutes() / 60;
+      nextCigTimes.push(t);
+    }
+  }
+
+  if (nextCigTimes.length === 0) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  const avgTime = nextCigTimes.reduce((a, b) => a + b, 0) / nextCigTimes.length;
+  const predictedCigDate = new Date(lastCigDate);
+  const hour = Math.floor(avgTime);
+  const minute = Math.round((avgTime - hour) * 60);
+  predictedCigDate.setHours(hour, minute, 0, 0);
+
+  const timeDiffMinutes = Math.round(
+    (predictedCigDate.getTime() - now.getTime()) / 60000
+  );
+
+  // Temps déjà écoulé depuis la dernière
+  const elapsedSinceLast = Math.floor(
+    (now.getTime() - lastCigDate.getTime()) / 60000
+  );
+  const remainingMin = Math.max(timeDiffMinutes, 60 - elapsedSinceLast);
+
+  nextCigEstimate.value = remainingMin > 0 ? remainingMin : null;
+};
+
+// Aligne les jours à 4h du matin
+function getAdjustedDateKey(date) {
+  const adjusted = new Date(date);
+  if (adjusted.getHours() < 4) adjusted.setDate(adjusted.getDate() - 1);
+  adjusted.setHours(4, 0, 0, 0);
+  return adjusted.toISOString().slice(0, 10);
+}
+
 onMounted(() => {
   updateEvents();
   updateTimeSinceLast();
+  estimateNextCigarette();
   const interval = setInterval(updateTimeSinceLast, 60000);
   onBeforeUnmount(() => clearInterval(interval));
 });
+
+watch(events, estimateNextCigarette);
 </script>
