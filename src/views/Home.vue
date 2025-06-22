@@ -175,7 +175,7 @@ function getAdjustedDateKey(date) {
 }
 
 const shareUrl = computed(() => {
-  const userName = ref(localStorage.getItem("userName") || "John Doe");
+  const userName = localStorage.getItem("userName") || "John Doe";
   return `${window.location.origin}/share?name=${encodeURIComponent(
     userName
   )}&count=${count.value}&last=${timeSinceLast.value || 0}`;
@@ -190,11 +190,11 @@ const share = () => {
         url: shareUrl.value,
       })
       .catch((err) => {
-        alert("Erreur lors du partage : " + err.message);
+        // alert("Erreur lors du partage : " + err.message);
       });
   } else {
     navigator.clipboard.writeText(shareUrl.value);
-    alert("Lien copié dans le presse-papiers !");
+    // alert("Lien copié dans le presse-papiers !");
   }
 };
 
