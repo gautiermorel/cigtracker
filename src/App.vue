@@ -1,12 +1,27 @@
+<script setup>
+import { computed } from "vue";
+import { useRoute } from "vue-router";
+import Header from "./components/Header.vue";
+import BottomNav from "./components/BottomNav.vue";
+import { useAppVersion } from "./composables/useAppVersion";
+
+const route = useRoute();
+const isSharePage = computed(() => route.path === "/share");
+
+const { version, updateAvailable, reloadApp } = useAppVersion();
+</script>
+
 <template>
   <div class="bg-neutral-100 relative min-h-screen">
-    <Header />
+    <!-- Header caché sur /share -->
+    <Header v-if="!isSharePage" />
 
-    <div class="px-6">
+    <div :class="!isSharePage ? 'px-6' : ''">
       <router-view />
     </div>
 
-    <BottomNav />
+    <!-- BottomNav caché sur /share -->
+    <BottomNav v-if="!isSharePage" />
 
     <transition name="fade">
       <div
@@ -34,22 +49,3 @@
     </transition>
   </div>
 </template>
-
-<script setup>
-import Header from "./components/Header.vue";
-import BottomNav from "./components/BottomNav.vue";
-import { useAppVersion } from "./composables/useAppVersion";
-
-const { version, updateAvailable, reloadApp } = useAppVersion();
-</script>
-
-<style scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.3s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-</style>

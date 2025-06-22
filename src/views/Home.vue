@@ -29,17 +29,27 @@
         {{ $t("addCigarette") }}
       </button>
     </div>
+
+    <!-- Bouton de partage discret en bas -->
+    <button
+      @click="share"
+      class="fixed bottom-28 left-1/2 transform -translate-x-1/2 bg-white p-3 rounded-full shadow-md hover:shadow-lg transition-shadow text-gray-700"
+      aria-label="Partager"
+      title="Partager"
+    >
+      <Upload class="w-6 h-6" />
+    </button>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
+import { Upload } from "lucide-vue-next";
 
 const themeColor = localStorage.getItem("themeColor") || "#ef4444";
 
 const STORAGE_KEY = "smokeEvents";
 const events = ref([]);
-const pricePerCig = parseFloat(localStorage.getItem("pricePerCig")) || 0.5;
 
 const updateEvents = () => {
   events.value = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
@@ -164,11 +174,38 @@ function getAdjustedDateKey(date) {
   return adjusted.toISOString().slice(0, 10);
 }
 
+const shareUrl = computed(() => {
+  const userName = ref(localStorage.getItem("userName") || "John Doe");
+  return `${window.location.origin}/share?name=${encodeURIComponent(
+    userName
+  )}&count=${count.value}&last=${timeSinceLast.value || 0}`;
+});
+
+const share = () => {
+  if (navigator.share) {
+    navigator
+      .share({
+        title: "CigTracker",
+        text: "Voici mon suivi des cigarettes fumées.",
+        url: shareUrl.value,
+      })
+      .catch((err) => {
+        alert("Erreur lors du partage : " + err.message);
+      });
+  } else {
+    navigator.clipboard.writeText(shareUrl.value);
+    alert("Lien copié dans le presse-papiers !");
+  }
+};
+
 onMounted(() => {
   updateEvents();
   updateTimeSinceLast();
   estimateNextCigarette();
-  const interval = setInterval(updateTimeSinceLast, 60000);
+  const interval = setInterval(() => {
+    updateTimeSinceLast();
+    estimateNextCigarette();
+  }, 60000);
   onBeforeUnmount(() => clearInterval(interval));
 });
 

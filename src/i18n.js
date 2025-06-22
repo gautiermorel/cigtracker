@@ -31,6 +31,7 @@ const messages = {
     newVersionAvailable: "New version available",
     refresh: "Refresh",
     suggestedWaitTime: "Suggested wait time",
+    sharingIntro: "is sharing their cigarette log.",
   },
   fr: {
     home: "Accueil",
@@ -61,7 +62,8 @@ const messages = {
     themeColor: "Couleur du thème",
     newVersionAvailable: "Nouvelle version disponible",
     refresh: "Rafraîchir",
-    suggestedWaitTime: "Délai recommandé"
+    suggestedWaitTime: "Délai recommandé",
+    sharingIntro: "vous partage son suivi de cigarette",
   },
 };
 

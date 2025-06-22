@@ -4,6 +4,7 @@ import History from '../views/History.vue';
 import Profile from '../views/Profile.vue';
 import Stats from '../views/Stats.vue';
 import Settings from '../views/Settings.vue';
+import Share from "../views/Share.vue";
 
 const routes = [
   {
@@ -35,6 +36,12 @@ const routes = [
     name: 'Profile',
     component: Profile,
     meta: { key: 'profile' }
+  },
+  {
+    path: '/share',
+    name: 'Share',
+    component: Share,
+    meta: { key: 'share' }
   }
 ];
 
