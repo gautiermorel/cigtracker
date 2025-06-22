@@ -132,7 +132,6 @@ function triggerFileInput() {
   fileInputRef.value?.click();
 }
 
-// Keep locale in sync
 watch(language, (newLang) => {
   locale.value = newLang;
 });

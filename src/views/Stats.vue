@@ -28,7 +28,6 @@ import {
 import { MatrixController, MatrixElement } from "chartjs-chart-matrix";
 import "chartjs-adapter-date-fns";
 
-// Utility to align to 4am-based day (returns 'YYYY-MM-DD')
 function getAdjustedDateKey(date) {
   const adjusted = new Date(date);
   if (adjusted.getHours() < 4) adjusted.setDate(adjusted.getDate() - 1);
@@ -36,7 +35,6 @@ function getAdjustedDateKey(date) {
   return adjusted.toISOString().slice(0, 10);
 }
 
-// Plugin to draw index in each matrix cell
 const cigaretteIndexPlugin = {
   id: "cigaretteIndexPlugin",
   afterDatasetsDraw(chart) {

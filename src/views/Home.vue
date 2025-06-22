@@ -91,7 +91,6 @@ const updateTimeSinceLast = () => {
 
 const nextCigEstimate = ref(null);
 
-// Estimation basée sur l’heure moyenne de la cigarette suivante
 const estimateNextCigarette = () => {
   const allDates = events.value.map((ts) => new Date(ts));
   if (allDates.length === 0) {
@@ -109,7 +108,6 @@ const estimateNextCigarette = () => {
     grouped[key].push(date);
   });
 
-  // Trier les événements dans chaque jour
   for (const day of Object.keys(grouped)) {
     grouped[day].sort((a, b) => a - b);
   }
@@ -127,11 +125,10 @@ const estimateNextCigarette = () => {
 
   const nextCigTimes = [];
 
-  // Chercher l’heure moyenne de la cigarette suivante (même index)
   for (const [key, events] of Object.entries(grouped)) {
     if (key === todayKey) continue;
     if (events.length > currentIndex) {
-      const d = events[currentIndex]; // prochaine cigarette dans ce jour-là
+      const d = events[currentIndex];
       const t = d.getHours() + d.getMinutes() / 60;
       nextCigTimes.push(t);
     }
@@ -152,7 +149,6 @@ const estimateNextCigarette = () => {
     (predictedCigDate.getTime() - now.getTime()) / 60000
   );
 
-  // Temps déjà écoulé depuis la dernière
   const elapsedSinceLast = Math.floor(
     (now.getTime() - lastCigDate.getTime()) / 60000
   );
@@ -161,7 +157,6 @@ const estimateNextCigarette = () => {
   nextCigEstimate.value = remainingMin > 0 ? remainingMin : null;
 };
 
-// Aligne les jours à 4h du matin
 function getAdjustedDateKey(date) {
   const adjusted = new Date(date);
   if (adjusted.getHours() < 4) adjusted.setDate(adjusted.getDate() - 1);

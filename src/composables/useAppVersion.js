@@ -26,8 +26,11 @@ export function useAppVersion (options = { checkInterval: 0 }) {
 
   const reloadApp = () => {
     localStorage.setItem("appVersion", currentVersion.value);
-    window.location.reload(true);
+    const url = new URL(window.location.href);
+    url.searchParams.set("_", Date.now());
+    window.location.href = url.toString();
   };
+
 
   onMounted(() => {
     checkVersion();
