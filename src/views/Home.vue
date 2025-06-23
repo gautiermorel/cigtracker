@@ -15,11 +15,15 @@
         <span v-else>—</span>
       </p>
 
-      <p class="text-sm text-neutral-500 mb-6">
+      <p
+        class="text-sm text-neutral-500"
+        v-if="enableRecommendation && nextCigEstimate !== null"
+      >
         {{ $t("suggestedWaitTime") }} :
         <span v-if="nextCigEstimate !== null">{{ nextCigEstimate }} min</span>
         <span v-else>—</span>
       </p>
+      <div class="mb-6"></div>
 
       <button
         @click="addCigarette"
@@ -47,6 +51,8 @@ import { ref, computed, onMounted, onBeforeUnmount, watch } from "vue";
 import { Upload } from "lucide-vue-next";
 
 const themeColor = localStorage.getItem("themeColor") || "#ef4444";
+const enableRecommendation =
+  localStorage.getItem("enableRecommendation") !== "false";
 
 const STORAGE_KEY = "smokeEvents";
 const events = ref([]);

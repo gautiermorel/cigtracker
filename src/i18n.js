@@ -32,6 +32,7 @@ const messages = {
     refresh: "Refresh",
     suggestedWaitTime: "Suggested wait time",
     sharingIntro: "is sharing their cigarette log.",
+    enableRecommendation: "Enable recommendation",
   },
   fr: {
     home: "Accueil",
@@ -64,6 +65,7 @@ const messages = {
     refresh: "Rafraîchir",
     suggestedWaitTime: "Délai recommandé",
     sharingIntro: "vous partage son suivi de cigarette",
+    enableRecommendation: "Activer la recommandation",
   },
 };
 

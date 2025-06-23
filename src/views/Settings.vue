@@ -111,6 +111,18 @@
         />
       </div>
 
+      <div class="flex items-center mt-4">
+        <input
+          id="enableRecommendation"
+          type="checkbox"
+          v-model="enableRecommendation"
+          class="mr-2"
+        />
+        <label for="enableRecommendation" class="text-sm text-neutral-700">
+          {{ $t("enableRecommendation") }}
+        </label>
+      </div>
+
       <button
         @click="save"
         :style="{ backgroundColor: themeColor }"
@@ -158,6 +170,10 @@ const colorLongIntervalThreashold = ref(
   localStorage.getItem("colorLongIntervalThreashold") || "#3b82f6"
 );
 
+const enableRecommendation = ref(
+  localStorage.getItem("enableRecommendation") !== "false"
+);
+
 const saved = ref(false);
 
 const save = () => {
@@ -184,10 +200,10 @@ const save = () => {
     "colorLongIntervalThreashold",
     colorLongIntervalThreashold.value
   );
+  localStorage.setItem("enableRecommendation", enableRecommendation.value);
   saved.value = true;
   setTimeout(() => (saved.value = false), 2000);
 };
-
 </script>
 
 <style scoped>
