@@ -17,11 +17,17 @@
 
       <p
         class="text-sm text-neutral-500"
-        v-if="enableRecommendation && nextCigEstimate !== null"
+        v-if="
+          enableRecommendation &&
+          nextCigEstimate !== null &&
+          nextCigEstimate !== 0
+        "
       >
-        {{ $t("suggestedWaitTime") }} :
-        <span v-if="nextCigEstimate !== null">{{ nextCigEstimate }} min</span>
-        <span v-else>—</span>
+        <i>
+          {{ $t("suggestedWaitTime") }} :
+          <span v-if="nextCigEstimate !== null">{{ nextCigEstimate }} min</span>
+          <span v-else>—</span>
+        </i>
       </p>
       <div class="mb-6"></div>
 
@@ -108,77 +114,93 @@ const updateTimeSinceLast = () => {
 const nextCigEstimate = ref(null);
 
 const estimateNextCigarette = () => {
-  const allDates = events.value.map((ts) => new Date(ts));
-  if (allDates.length === 0) {
-    nextCigEstimate.value = null;
-    return;
-  }
+  // Read goal from localStorage, default to 15/day
+  const goal = Number(localStorage.getItem("dailyGoal") || 15);
 
+  // If no events ever, we still compute recommendation relative to the ideal plan
   const now = new Date();
-  const todayKey = getAdjustedDateKey(now);
-  const grouped = {};
 
-  allDates.forEach((date) => {
-    const key = getAdjustedDateKey(date);
-    if (!grouped[key]) grouped[key] = [];
-    grouped[key].push(date);
-  });
-
-  for (const day of Object.keys(grouped)) {
-    grouped[day].sort((a, b) => a - b);
-  }
-
-  const todayEvents = grouped[todayKey] || [];
-  const currentIndex = todayEvents.length;
-
-  if (currentIndex === 0) {
-    nextCigEstimate.value = null;
-    return;
-  }
-
-  const lastCigDate = todayEvents[todayEvents.length - 1];
-  const lastTime = lastCigDate.getHours() + lastCigDate.getMinutes() / 60;
-
-  const nextCigTimes = [];
-
-  for (const [key, events] of Object.entries(grouped)) {
-    if (key === todayKey) continue;
-    if (events.length > currentIndex) {
-      const d = events[currentIndex];
-      const t = d.getHours() + d.getMinutes() / 60;
-      nextCigTimes.push(t);
+  // Special case: between 00:30 and 06:59 → wait until 07:00
+  {
+    const y = now.getFullYear(),
+      m = now.getMonth(),
+      d = now.getDate();
+    const halfPast = new Date(y, m, d, 0, 30, 0, 0);
+    const seven = new Date(y, m, d, 7, 0, 0, 0);
+    if (now >= halfPast && now < seven) {
+      nextCigEstimate.value = Math.max(
+        0,
+        Math.floor((seven.getTime() - now.getTime()) / 60000)
+      );
+      return;
     }
   }
 
-  if (nextCigTimes.length === 0) {
+  // Determine the current local-day (04:00 → 04:00) to anchor the ideal plan within it
+  const { start } = getLocalDayBounds();
+  const dayStart = new Date(start); // 04:00 of the current local-day
+
+  // Build the ideal plan anchored at 07:00 and 00:30 inside this local-day
+  const planStart = new Date(
+    dayStart.getFullYear(),
+    dayStart.getMonth(),
+    dayStart.getDate(),
+    7,
+    0,
+    0,
+    0
+  );
+  const planEnd = new Date(
+    dayStart.getFullYear(),
+    dayStart.getMonth(),
+    dayStart.getDate() + 1,
+    0,
+    30,
+    0,
+    0
+  );
+
+  if (goal <= 0) {
     nextCigEstimate.value = null;
     return;
   }
+  if (goal === 1) {
+    // One per day: scheduled at 07:00; after that, catch-up (0) until 00:30.
+    if (now < planStart) {
+      nextCigEstimate.value = Math.max(
+        0,
+        Math.floor((planStart.getTime() - now.getTime()) / 60000)
+      );
+    } else if (now >= planEnd) {
+      nextCigEstimate.value = null;
+    } else {
+      nextCigEstimate.value = 0;
+    }
+    return;
+  }
 
-  const avgTime = nextCigTimes.reduce((a, b) => a + b, 0) / nextCigTimes.length;
-  const predictedCigDate = new Date(lastCigDate);
-  const hour = Math.floor(avgTime);
-  const minute = Math.round((avgTime - hour) * 60);
-  predictedCigDate.setHours(hour, minute, 0, 0);
+  // Ideal spacing with both ends anchored (e.g., 1050 / (15 - 1) = 75 minutes)
+  const totalMin = (planEnd.getTime() - planStart.getTime()) / 60000; // 1050
+  const spacingMin = totalMin / (goal - 1);
 
-  const timeDiffMinutes = Math.round(
-    (predictedCigDate.getTime() - now.getTime()) / 60000
+  // Next planned slot index is exactly the number of cigs already smoked today
+  const currentIndex = count.value; // uses your existing computed
+  if (currentIndex >= goal) {
+    nextCigEstimate.value = null; // goal reached
+    return;
+  }
+
+  // Target time = planStart + index * spacing (rounded to the nearest minute)
+  const target = new Date(
+    planStart.getTime() + Math.round(currentIndex * spacingMin) * 60000
   );
+  // Guard rounding for the very last slot
+  if (currentIndex === goal - 1) target.setTime(planEnd.getTime());
 
-  const elapsedSinceLast = Math.floor(
-    (now.getTime() - lastCigDate.getTime()) / 60000
-  );
-  const remainingMin = Math.max(timeDiffMinutes, 60 - elapsedSinceLast);
-
-  nextCigEstimate.value = remainingMin > 0 ? remainingMin : null;
+  // Catch-up rule: if the target is in the past → 0; else → minutes until target
+  const diffMin = Math.floor((target.getTime() - now.getTime()) / 60000);
+  nextCigEstimate.value = Math.max(0, diffMin);
 };
-
-function getAdjustedDateKey(date) {
-  const adjusted = new Date(date);
-  if (adjusted.getHours() < 4) adjusted.setDate(adjusted.getDate() - 1);
-  adjusted.setHours(4, 0, 0, 0);
-  return adjusted.toISOString().slice(0, 10);
-}
 
 const shareUrl = computed(() => {
   const userName = localStorage.getItem("userName") || "John Doe";

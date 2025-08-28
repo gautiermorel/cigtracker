@@ -96,6 +96,7 @@ import { DateTime } from "luxon";
 const STORAGE_KEY = "smokeEvents";
 const nicotinePerCig = parseFloat(localStorage.getItem("nicotinePerCig")) || 4;
 const pricePerCig = parseFloat(localStorage.getItem("pricePerCig")) || 0.5;
+const goal = Number(localStorage.getItem("dailyGoal") || 15);
 
 const events = ref([]);
 const grouped = reactive({});
@@ -159,9 +160,8 @@ const orderedHistory = computed(() => {
 });
 
 const diff = (index) => {
-  const sortedArr = orderedHistory.value;
-  if (index >= sortedArr.length - 1) return "–";
-  const delta = sortedArr[index].count - sortedArr[index + 1].count;
+  const todayCount = orderedHistory.value[index]?.count ?? 0;
+  const delta = todayCount - goal;
   const sign = delta > 0 ? "+" : "";
   return sign + delta;
 };
