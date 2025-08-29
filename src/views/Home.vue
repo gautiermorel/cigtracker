@@ -116,90 +116,103 @@ const nextCigEstimate = ref(null);
 const estimateNextCigarette = () => {
   // Read goal from localStorage, default to 15/day
   const goal = Number(localStorage.getItem("dailyGoal") || 15);
-
-  // If no events ever, we still compute recommendation relative to the ideal plan
-  const now = new Date();
-
-  // Special case: between 00:30 and 06:59 → wait until 07:00
-  {
-    const y = now.getFullYear(),
-      m = now.getMonth(),
-      d = now.getDate();
-    const halfPast = new Date(y, m, d, 0, 30, 0, 0);
-    const seven = new Date(y, m, d, 7, 0, 0, 0);
-    if (now >= halfPast && now < seven) {
-      nextCigEstimate.value = Math.max(
-        0,
-        Math.floor((seven.getTime() - now.getTime()) / 60000)
-      );
-      return;
-    }
-  }
-
-  // Determine the current local-day (04:00 → 04:00) to anchor the ideal plan within it
-  const { start } = getLocalDayBounds();
-  const dayStart = new Date(start); // 04:00 of the current local-day
-
-  // Build the ideal plan anchored at 07:00 and 00:30 inside this local-day
-  const planStart = new Date(
-    dayStart.getFullYear(),
-    dayStart.getMonth(),
-    dayStart.getDate(),
-    7,
-    0,
-    0,
-    0
-  );
-  const planEnd = new Date(
-    dayStart.getFullYear(),
-    dayStart.getMonth(),
-    dayStart.getDate() + 1,
-    0,
-    30,
-    0,
-    0
-  );
-
   if (goal <= 0) {
     nextCigEstimate.value = null;
     return;
   }
-  if (goal === 1) {
-    // One per day: scheduled at 07:00; after that, catch-up (0) until 00:30.
-    if (now < planStart) {
-      nextCigEstimate.value = Math.max(
-        0,
-        Math.floor((planStart.getTime() - now.getTime()) / 60000)
-      );
-    } else if (now >= planEnd) {
-      nextCigEstimate.value = null;
-    } else {
-      nextCigEstimate.value = 0;
-    }
-    return;
-  }
 
-  // Ideal spacing with both ends anchored (e.g., 1050 / (15 - 1) = 75 minutes)
-  const totalMin = (planEnd.getTime() - planStart.getTime()) / 60000; // 1050
-  const spacingMin = totalMin / (goal - 1);
+  const now = new Date();
 
-  // Next planned slot index is exactly the number of cigs already smoked today
-  const currentIndex = count.value; // uses your existing computed
-  if (currentIndex >= goal) {
-    nextCigEstimate.value = null; // goal reached
-    return;
-  }
-
-  // Target time = planStart + index * spacing (rounded to the nearest minute)
-  const target = new Date(
-    planStart.getTime() + Math.round(currentIndex * spacingMin) * 60000
+  // Local-day window (04:00 → 04:00) and deadline at 00:30 next civil day
+  const { start } = getLocalDayBounds();
+  const dayStart = new Date(start);
+  const deadline = new Date(
+    dayStart.getFullYear(),
+    dayStart.getMonth(),
+    dayStart.getDate() + 1,
+    0, 30, 0, 0
   );
-  // Guard rounding for the very last slot
-  if (currentIndex === goal - 1) target.setTime(planEnd.getTime());
 
-  // Catch-up rule: if the target is in the past → 0; else → minutes until target
-  const diffMin = Math.floor((target.getTime() - now.getTime()) / 60000);
-  nextCigEstimate.value = Math.max(0, diffMin);
+  if (now >= deadline) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  const filtered = filteredEvents.value;
+  const alreadySmoked = filtered.length;
+
+  // If goal already reached
+  if (alreadySmoked >= goal) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  // Helper to return minutes until a Date, floored and clamped at >= 0
+  const minutesUntil = (t) => Math.max(0, Math.floor((t.getTime() - now.getTime()) / 60000));
+
+  if (alreadySmoked === 0) {
+    // No cigarette yet today: build a uniform schedule from a virtual anchor to the deadline.
+    // We use 07:00 as the "virtual start" of the plan (modifiable if tu veux autre chose).
+    const planStart = new Date(
+      dayStart.getFullYear(),
+      dayStart.getMonth(),
+      dayStart.getDate(),
+      7, 0, 0, 0
+    );
+
+    // Before 07:00, suggest waiting until 07:00 for the first slot
+    if (now < planStart) {
+      nextCigEstimate.value = minutesUntil(planStart);
+      return;
+    }
+
+    // Uniform spacing across [planStart, deadline] for 'goal' cigarettes
+    const totalMin = Math.max(0, Math.floor((deadline.getTime() - planStart.getTime()) / 60000));
+    if (totalMin === 0) {
+      nextCigEstimate.value = null;
+      return;
+    }
+    const spacingMin = totalMin / goal;
+
+    // Compute the next planned slot after 'now'
+    const elapsedSincePlanStartMin = (now.getTime() - planStart.getTime()) / 60000;
+    const slotsPassed = Math.floor(elapsedSincePlanStartMin / spacingMin);
+    const nextSlotTime = new Date(planStart.getTime() + (slotsPassed + 1) * spacingMin * 60000);
+
+    // If next slot is beyond deadline, no more reco
+    if (nextSlotTime >= deadline) {
+      nextCigEstimate.value = null;
+      return;
+    }
+
+    nextCigEstimate.value = minutesUntil(nextSlotTime);
+    return;
+  }
+
+  // There is at least one cigarette today: anchor on the last one
+  const last = filtered[filtered.length - 1];
+  const lastDt = new Date(last);
+
+  // Remaining cigarettes to reach the goal
+  const remainingCigs = goal - alreadySmoked;
+
+  // Uniform spacing from LAST cigarette to the deadline, over remainingCigs
+  // spacing = (deadline - last) / remainingCigs
+  const remainingWindowMin = Math.max(0, Math.floor((deadline.getTime() - lastDt.getTime()) / 60000));
+  if (remainingWindowMin === 0) {
+    nextCigEstimate.value = null;
+    return;
+  }
+
+  const spacingMin = remainingWindowMin / remainingCigs;
+
+  // Elapsed since last cigarette
+  const elapsedSinceLastMin = (now.getTime() - lastDt.getTime()) / 60000;
+
+  // Recommended wait = spacing - elapsed
+  const suggested = Math.floor(spacingMin - elapsedSinceLastMin);
+
+  nextCigEstimate.value = Math.max(0, suggested);
 };
 
 const shareUrl = computed(() => {
