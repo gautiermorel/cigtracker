@@ -44,17 +44,17 @@
           <span>{{ $t("totalCigs") || "Total cigarettes" }}</span>
           <strong>{{ totalCigs }}</strong>
         </div>
-        <div class="flex justify-between">
+        <!-- <div class="flex justify-between">
           <span>{{ $t("avgPerDayAllDays") || "Average per day (all days)" }}</span>
           <strong>{{ avgPerDayAllDays }}</strong>
-        </div>
+        </div> -->
         <div class="flex justify-between">
           <span>{{ $t("avgPerDayConsumedDays") || "Average per day (consumed days)" }}</span>
           <strong>{{ avgPerDayConsumedDays }}</strong>
         </div>
         <div class="flex justify-between">
           <span>{{ $t("totalSpent") || "Total spent" }}</span>
-          <strong>{{ totalSpent }}</strong>
+          <strong>{{ totalSpent }}€</strong>
         </div>
       </div>
       <p v-if="daysCoveredInfo" class="text-xs text-neutral-500">
@@ -432,7 +432,7 @@ const totalSpent = computed(() => (totalCigs.value * (Number(price.value) || 0))
 
 const daysCoveredInfo = computed(() => {
   if (!firstDayStart.value) return "";
-  return `${daysCovered.value} day(s) covered (${consumedDaysGlobal.value} day(s) with consumption), excluding current day`;
+  return `${consumedDaysGlobal.value} day(s) covered, excluding current day`;
 });
 
 /** ---------- Window options based on history ---------- */

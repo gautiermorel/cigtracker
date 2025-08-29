@@ -33,6 +33,12 @@ const messages = {
     suggestedWaitTime: "Suggested wait time",
     sharingIntro: "is sharing their cigarette log.",
     enableRecommendation: "Enable recommendation",
+    globalView: 'Global Stats',
+    trackingSince: 'Since',
+    totalCigs: 'Total Cigs',
+    avgPerDayAllDays: 'Avg per day',
+    avgPerDayConsumedDays: 'Average',
+    totalSpent: 'Spent',
   },
   fr: {
     home: "Accueil",
@@ -66,6 +72,12 @@ const messages = {
     suggestedWaitTime: "Délai recommandé",
     sharingIntro: "vous partage son suivi de cigarette",
     enableRecommendation: "Activer la recommandation",
+    globalView: 'À propos',
+    trackingSince: 'Depuis',
+    totalCigs: 'Cigarettes',
+    avgPerDayAllDays: 'Moy/Jour',
+    avgPerDayConsumedDays: 'Moyenne par jour',
+    totalSpent: 'Total',
   },
 };
 

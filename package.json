@@ -1,6 +1,6 @@
 {
   "name": "cigtracker",
-  "version": "1.0.72",
+  "version": "1.0.73",
   "type": "module",
   "description": "An app to track cigarette consumption",
   "scripts": {
